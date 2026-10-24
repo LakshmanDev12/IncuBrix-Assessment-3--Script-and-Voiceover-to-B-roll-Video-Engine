@@ -12,7 +12,8 @@ import type {
 } from '../types';
 
 const API_BASE = (
-  import.meta.env.VITE_API_BASE_URL || ''
+  import.meta.env.VITE_API_BASE_URL ||
+  'https://incubrix-video-broll-engine.onrender.com'
 ).replace(/\/+$/, '');
 
 export class ApiError extends Error {
@@ -34,78 +35,65 @@ export class ApiError extends Error {
   }
 }
 
-/**
- * Parse API responses safely.
- * Supports JSON responses and provides useful errors for empty
- * or non-JSON responses.
- */
 async function handleResponse<T>(res: Response): Promise<T> {
-  const contentType = res.headers.get('content-type') || '';
   const responseText = await res.text();
-
-  let data: any = undefined;
+  let data: unknown;
 
   if (responseText.trim()) {
     try {
       data = JSON.parse(responseText);
     } catch {
-      if (res.ok) {
-        throw new ApiError(
-          `The server returned a non-JSON response (HTTP ${res.status}).`,
-          'INVALID_RESPONSE',
-          res.status,
-          responseText.slice(0, 500),
-        );
-      }
+      data = undefined;
     }
   }
 
   if (!res.ok) {
-    let errorCode = 'HTTP_ERROR';
-    let errorMessage = `Request failed with status ${res.status}`;
-    let details: unknown = undefined;
+    const body = data as {
+      detail?: string | {
+        error_code?: string;
+        message?: string;
+        details?: unknown;
+      };
+      message?: string;
+      error_code?: string;
+      details?: unknown;
+    } | undefined;
 
-    if (data && typeof data === 'object') {
-      if (typeof data.detail === 'string') {
-        errorMessage = data.detail;
-      } else if (
-        data.detail &&
-        typeof data.detail === 'object'
-      ) {
-        errorCode = data.detail.error_code || errorCode;
-        errorMessage = data.detail.message || errorMessage;
-        details = data.detail.details;
-      } else if (data.message) {
-        errorMessage = data.message;
-        errorCode = data.error_code || errorCode;
-        details = data.details;
-      }
+    let message = `Request failed with status ${res.status}`;
+    let code = 'HTTP_ERROR';
+    let details: unknown;
+
+    if (typeof body?.detail === 'string') {
+      message = body.detail;
+    } else if (body?.detail && typeof body.detail === 'object') {
+      message = body.detail.message || message;
+      code = body.detail.error_code || code;
+      details = body.detail.details;
+    } else if (body?.message) {
+      message = body.message;
+      code = body.error_code || code;
+      details = body.details;
     } else if (responseText.trim()) {
-      errorMessage = responseText.slice(0, 500);
+      message = responseText.slice(0, 300);
     }
 
-    throw new ApiError(
-      errorMessage,
-      errorCode,
-      res.status,
-      details,
-    );
+    throw new ApiError(message, code, res.status, details);
   }
 
   if (!responseText.trim()) {
     throw new ApiError(
-      'The server returned an empty response.',
+      'The API returned an empty response.',
       'EMPTY_RESPONSE',
       res.status,
     );
   }
 
-  if (!contentType.includes('application/json') && data === undefined) {
+  if (data === undefined) {
     throw new ApiError(
-      'The server response was not valid JSON.',
+      'The API returned invalid JSON.',
       'INVALID_RESPONSE',
       res.status,
-      responseText.slice(0, 500),
+      responseText.slice(0, 300),
     );
   }
 
@@ -118,13 +106,15 @@ export const api = {
     version: string;
     uptime_seconds?: number;
   }> {
-    const res = await fetch(`${API_BASE}/health`);
-    return handleResponse(res);
+    return handleResponse(
+      await fetch(`${API_BASE}/health`),
+    );
   },
 
   async getLimits(): Promise<LimitsResponse> {
-    const res = await fetch(`${API_BASE}/v1/limits`);
-    return handleResponse<LimitsResponse>(res);
+    return handleResponse(
+      await fetch(`${API_BASE}/v1/limits`),
+    );
   },
 
   async listJobs(
@@ -141,36 +131,34 @@ export const api = {
     params.set('limit', String(limit));
     params.set('offset', String(offset));
 
-    const res = await fetch(
-      `${API_BASE}/v1/jobs?${params.toString()}`,
+    return handleResponse(
+      await fetch(`${API_BASE}/v1/jobs?${params.toString()}`),
     );
-
-    return handleResponse<JobListResponse>(res);
   },
 
   async getJob(jobId: string): Promise<JobResponse> {
-    const res = await fetch(
-      `${API_BASE}/v1/jobs/${encodeURIComponent(jobId)}`,
+    return handleResponse(
+      await fetch(
+        `${API_BASE}/v1/jobs/${encodeURIComponent(jobId)}`,
+      ),
     );
-
-    return handleResponse<JobResponse>(res);
   },
 
   async cancelJob(jobId: string): Promise<CancelJobResponse> {
-    const res = await fetch(
-      `${API_BASE}/v1/jobs/${encodeURIComponent(jobId)}/cancel`,
-      { method: 'POST' },
+    return handleResponse(
+      await fetch(
+        `${API_BASE}/v1/jobs/${encodeURIComponent(jobId)}/cancel`,
+        { method: 'POST' },
+      ),
     );
-
-    return handleResponse<CancelJobResponse>(res);
   },
 
   async getArtifacts(jobId: string): Promise<ArtifactsResponse> {
-    const res = await fetch(
-      `${API_BASE}/v1/jobs/${encodeURIComponent(jobId)}/artifacts`,
+    return handleResponse(
+      await fetch(
+        `${API_BASE}/v1/jobs/${encodeURIComponent(jobId)}/artifacts`,
+      ),
     );
-
-    return handleResponse<ArtifactsResponse>(res);
   },
 
   async createJobJson(
@@ -185,13 +173,13 @@ export const api = {
       headers['Idempotency-Key'] = idempotencyKey;
     }
 
-    const res = await fetch(`${API_BASE}/v1/jobs`, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(payload),
-    });
-
-    return handleResponse<JobResponse>(res);
+    return handleResponse(
+      await fetch(`${API_BASE}/v1/jobs`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(payload),
+      }),
+    );
   },
 
   async createJobMultipart(
@@ -204,15 +192,13 @@ export const api = {
       headers['Idempotency-Key'] = idempotencyKey;
     }
 
-    // Do not set Content-Type manually for FormData.
-    // The browser adds the multipart boundary automatically.
-    const res = await fetch(`${API_BASE}/v1/jobs/multipart`, {
-      method: 'POST',
-      headers,
-      body: formData,
-    });
-
-    return handleResponse<JobResponse>(res);
+    return handleResponse(
+      await fetch(`${API_BASE}/v1/jobs/multipart`, {
+        method: 'POST',
+        headers,
+        body: formData,
+      }),
+    );
   },
 
   async probeAudioUrl(
@@ -222,32 +208,25 @@ export const api = {
     duration_seconds?: number;
     codec?: string;
   }> {
-    const res = await fetch(
-      `${API_BASE}/v1/audio/validate-url`,
-      {
+    return handleResponse(
+      await fetch(`${API_BASE}/v1/audio/validate-url`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url }),
-      },
+      }),
     );
-
-    return handleResponse(res);
   },
 
   async segmentScript(
     req: SegmentationRequest,
   ): Promise<SegmentationResponse> {
-    const res = await fetch(`${API_BASE}/v1/scenes/segment`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(req),
-    });
-
-    return handleResponse<SegmentationResponse>(res);
+    return handleResponse(
+      await fetch(`${API_BASE}/v1/scenes/segment`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(req),
+      }),
+    );
   },
 
   async searchMedia(
@@ -261,18 +240,17 @@ export const api = {
       count: String(count),
     });
 
-    const res = await fetch(
-      `${API_BASE}/v1/media/search?${params.toString()}`,
+    return handleResponse(
+      await fetch(
+        `${API_BASE}/v1/media/search?${params.toString()}`,
+      ),
     );
-
-    return handleResponse<MediaSearchResponse>(res);
   },
 
   async listProviders(): Promise<ProviderItemResponse[]> {
-    // Correct backend route: GET /v1/providers
-    const res = await fetch(`${API_BASE}/v1/providers`);
-
-    return handleResponse<ProviderItemResponse[]>(res);
+    return handleResponse(
+      await fetch(`${API_BASE}/v1/providers`),
+    );
   },
 
   getArtifactDownloadUrl(
