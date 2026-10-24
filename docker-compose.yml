@@ -1,0 +1,47 @@
+version: "3.9"
+
+# ──────────────────────────────────────────────────────────────
+# Vk Media — video-broll-engine Docker Compose
+# Services: backend (FastAPI :8002) + frontend (Nginx :8000)
+# ──────────────────────────────────────────────────────────────
+
+services:
+
+  # ── FastAPI Backend ────────────────────────────────────────
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vk-broll-backend
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      # Override AI generator URL to use host machine if running CogVideoX locally
+      # Change to host.docker.internal if you want to reach the host's port 8003
+      AI_VIDEO_GENERATOR_URL: http://host.docker.internal:8003
+    ports:
+      - "0.0.0.0:8002:8002"
+    volumes:
+      - ./output:/app/output
+    networks:
+      - broll-net
+
+  # ── Nginx Frontend ─────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: vk-broll-frontend
+    restart: unless-stopped
+    ports:
+      - "0.0.0.0:8000:80"
+    depends_on:
+      - backend
+    networks:
+      - broll-net
+
+# ── Internal network ───────────────────────────────────────
+networks:
+  broll-net:
+    name: vk-broll-net

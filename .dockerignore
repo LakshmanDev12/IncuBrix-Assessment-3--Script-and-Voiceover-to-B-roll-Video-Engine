@@ -1,0 +1,28 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+
+# Output videos (re-generated at runtime; large files)
+output/
+
+# Frontend build artifacts (built inside Docker)
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Dev/editor files
+.env.local
+.env.*.local
+*.log
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp

@@ -1,0 +1,14 @@
+torch>=2.2.0
+torchvision
+diffusers>=0.30.0
+transformers>=4.42.0
+accelerate>=0.33.0
+peft>=0.12.0
+bitsandbytes>=0.43.0
+sentencepiece
+protobuf
+decord
+imageio
+imageio-ffmpeg
+tqdm
+pydantic

@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vk-Media</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F5F7;--panel:#FFFFFF;--panel2:#F0F2F5;--line:#DDE1E7;--text:#141A22;--muted:#5C6675;
+  --accent:#3B5BDB;--accent-ink:#FFFFFF;--accent-soft:#E7ECFD;--ok:#0F8A5F;
+  --s1:#3B5BDB;--s2:#7048E8;--s3:#0C8599;--s4:#D9480F;--s5:#2F9E44;
+  color-scheme:light;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1217;--panel:#161C24;--panel2:#1D252F;--line:#2A333F;--text:#E9EDF2;--muted:#8D99A9;
+    --accent:#7C93FF;--accent-ink:#0E1217;--accent-soft:#222B4A;--ok:#4CD6A0;
+    --s1:#7C93FF;--s2:#A98BFF;--s3:#4FC3D6;--s4:#FF9362;--s5:#6FD58A;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1217;--panel:#161C24;--panel2:#1D252F;--line:#2A333F;--text:#E9EDF2;--muted:#8D99A9;
+  --accent:#7C93FF;--accent-ink:#0E1217;--accent-soft:#222B4A;--ok:#4CD6A0;
+  --s1:#7C93FF;--s2:#A98BFF;--s3:#4FC3D6;--s4:#FF9362;--s5:#6FD58A;color-scheme:dark;
+}
+:root[data-mode="pro"]{--accent:#1C7ED6}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font:14px/1.5 "Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+.mono{font-family:"JetBrains Mono",ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--panel);border-bottom:1px solid var(--line)}
+.bar{max-width:1760px;width:100%;margin:0 auto;padding:0 24px;display:flex;align-items:center;gap:24px;height:56px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px;letter-spacing:-.01em}
+.logo{width:28px;height:28px;border-radius:7px;background:var(--text);display:grid;place-items:center}
+.logo i{display:block;width:12px;height:12px;border:2px solid var(--bg);border-radius:3px;border-left-color:var(--accent);border-bottom-color:var(--accent)}
+.ver{font-weight:500;font-size:12px;color:var(--muted);border:1px solid var(--line);padding:1px 7px;border-radius:99px}
+nav{display:flex;gap:4px;height:100%;flex:1;overflow-x:auto}
+nav button{background:none;border:0;border-bottom:2px solid transparent;padding:0 12px;color:var(--muted);font-weight:500;white-space:nowrap}
+nav button:hover{color:var(--text)}
+nav button[aria-selected="true"]{color:var(--text);border-bottom-color:var(--accent)}
+.seg{display:flex;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:3px}
+.seg button{border:0;background:none;padding:5px 12px;border-radius:6px;color:var(--muted);font-weight:500;font-size:13px;white-space:nowrap}
+.seg button[aria-pressed="true"]{background:var(--panel);color:var(--text);box-shadow:0 0 0 1px var(--line)}
+main{max-width:1760px;width:96%;margin:0 auto;padding:14px 0 32px}
+.page-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+h1{font-size:22px;line-height:1.2;margin:0;letter-spacing:-.02em}
+.sub{color:var(--muted);margin:4px 0 0}
+.grid{display:grid;grid-template-columns:minmax(380px,1fr) minmax(480px,1.4fr);gap:24px;align-items:start}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+.card+.card{margin-top:14px}
+h2{font-size:15px;margin:0;font-weight:600}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+label.f{display:block;font-size:12px;color:var(--muted);margin-bottom:5px;font-weight:500}
+input[type=text],input[type=number],select,textarea{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+textarea{resize:vertical;min-height:95px;height:105px;line-height:1.5}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);outline:none}
+.btn{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:7px 12px;font-weight:500;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{background:var(--panel2)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.text{border:0;background:none;color:var(--accent);padding:4px 0}
+.meta{color:var(--muted);font-size:12px}
+/* Timeline: the one memorable element */
+.tl{display:flex;gap:2px;height:32px;margin-bottom:4px;min-width:100%}
+.tl div{border-radius:4px;display:flex;align-items:center;justify-content:center;padding:0 2px;font-size:10px;color:#fff;font-weight:600;min-width:5px;flex:1 0 auto;overflow:hidden;white-space:nowrap}
+.tlwrap{position:relative;cursor:pointer;overflow-x:auto;overflow-y:hidden;border-radius:8px}
+.ruler{display:flex;justify-content:space-between;color:var(--muted);font-size:11px;margin-bottom:10px}
+#scenes{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:10px;
+  max-height:260px;
+  min-height:140px;
+  overflow-y:auto;
+  padding:4px 6px 4px 0;
+  margin-bottom:12px;
+}
+#scenes::-webkit-scrollbar{width:6px}
+#scenes::-webkit-scrollbar-track{background:var(--panel2);border-radius:4px}
+#scenes::-webkit-scrollbar-thumb{background:var(--line);border-radius:4px}
+#scenes::-webkit-scrollbar-thumb:hover{background:var(--muted)}
+.scene{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--panel2);display:grid;grid-template-columns:4px 1fr;gap:12px}
+.scene+.scene{margin-top:0}
+.scene .stripe{border-radius:2px}
+.scene .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:8px}
+.scene .top b{font-size:13px}
+.scene .dur{display:flex;align-items:center;gap:6px}
+.scene .dur input{width:68px;text-align:center}
+.icon{border:0;background:none;color:var(--muted);padding:4px;border-radius:6px;line-height:0}
+.icon:hover{color:#E03131;background:var(--panel)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ratio{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+.ratio button{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:12px 6px;display:flex;flex-direction:column;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
+.ratio button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--text);font-weight:600}
+.ratio span.shape{border:2px solid currentColor;border-radius:3px;display:block}
+.fields{display:grid;gap:14px}
+.drop{border:1.5px dashed var(--line);border-radius:10px;padding:12px;text-align:center;background:var(--panel2);cursor:pointer}
+.drop:hover{border-color:var(--accent)}
+.sw{display:flex;justify-content:space-between;align-items:center;margin-top:14px;font-size:13px}
+.sticky{position:sticky;top:66px;width:100%}
+.go{width:100%;margin-top:20px;padding:14px;font-size:15px;font-weight:600;justify-content:center}
+.sum{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:10px}
+.empty{background:var(--panel);border:1px dashed var(--line);border-radius:12px;padding:56px 20px;text-align:center;color:var(--muted)}
+.empty h2{color:var(--text);margin-bottom:6px}
+.hist-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--line);gap:12px}
+.hist-row:last-child{border:0}
+.pill{font-size:12px;padding:2px 9px;border-radius:99px;border:1px solid var(--line);color:var(--ok);font-weight:600}
+.health{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.health .card{margin:0}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--ok);margin-right:8px}
+.dot.warn{background:#fab005;box-shadow:0 0 8px #fab005}
+.dot.err{background:#fa5252;box-shadow:0 0 8px #fa5252}
+.hide{display:none!important}
+dialog:not([open]){display:none!important}
+dialog[open]{display:block}
+dialog{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:14px;padding:22px;width:min(640px,calc(100% - 32px))}
+dialog::backdrop{background:rgba(5,8,12,.65)}
+.bar2{height:6px;background:var(--panel2);border-radius:99px;overflow:hidden;margin:14px 0 8px}
+.bar2 i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+.stage{display:grid;gap:6px;margin-top:10px;font-size:13px;color:var(--muted)}
+.stage .on{color:var(--text);font-weight:600}
+.screen{aspect-ratio:16/9;background:#05080C;border-radius:10px;display:grid;place-items:center;color:#9AA5B5;font-size:13px;margin:14px 0;overflow:hidden}
+@media (max-width:1024px){
+  .grid{grid-template-columns:1fr}
+  .sticky{position:static}
+  #scenes{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:10px;
+  max-height:260px;
+  min-height:140px;
+  overflow-y:auto;
+  padding:4px 6px 4px 0;
+  margin-bottom:12px;
+}
+  .bar{flex-wrap:wrap;height:auto;padding:10px 16px;gap:10px}
+  nav{order:3;flex-basis:100%;height:40px}
+  main{width:100%;padding:16px 16px 40px}
+}
+/* Monochrome black, grey and white theme */
+:root,:root:not([data-theme="light"]),:root[data-theme="dark"]{
+  --bg:#0A0A0B;--panel:rgba(20,20,22,.86);--panel2:#1B1B1E;--line:#2C2C31;--text:#F5F5F6;--muted:#8F8F98;
+  --accent:#FFFFFF;--accent-ink:#0A0A0B;--accent-soft:#26262A;--ok:#E8E8EA;color-scheme:dark;
+}
+:root[data-mode="pro"]{--accent:#C9CED6}
+body{
+  background-color:var(--bg);
+  background-image:
+    radial-gradient(ellipse 80% 40% at 50% -8%,rgba(255,255,255,.09),transparent 70%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .06 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    linear-gradient(rgba(255,255,255,.028) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.028) 1px,transparent 1px);
+  background-size:100% 100%,160px 160px,48px 48px,48px 48px;
+  background-attachment:fixed,scroll,scroll,scroll;
+}
+header{background:#0E0E10;border-bottom-color:#2C2C31}
+.card,.empty,.health .card{box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 12px 32px -18px rgba(0,0,0,.8)}
+.card{border-radius:10px}
+dialog:not([open]){display:none!important}
+dialog[open]{display:block}
+dialog{background:#141416;box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 30px 80px rgba(0,0,0,.7)}
+.logo i{border-left-color:#8F8F98;border-bottom-color:#8F8F98}
+.tl div{border:1px solid rgba(255,255,255,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.12)}
+.scene .stripe{filter:brightness(1.7)}
+.seg button[aria-pressed="true"]{background:#FFFFFF;color:#0A0A0B;box-shadow:none}
+.ratio button[aria-pressed="true"]{border-color:#FFFFFF;box-shadow:0 0 0 1px #FFFFFF inset}
+.btn.primary{box-shadow:0 0 0 1px rgba(255,255,255,.4),0 8px 24px -10px rgba(255,255,255,.35)}
+nav button[aria-selected="true"]{border-bottom-color:#FFFFFF}
+h1{letter-spacing:-.03em}
+.pill{color:var(--text);background:var(--panel2)}
+.dot{background:#FFFFFF;box-shadow:0 0 8px rgba(255,255,255,.7)}
+.bar2 i{background:#FFFFFF}
+input[type=checkbox]{accent-color:#FFFFFF}
+/* Motion */
+@keyframes rise{from{opacity:0;transform:translateY(14px)}}
+@keyframes drop{from{opacity:0;transform:translateY(-100%)}}
+@keyframes grow{from{transform:scaleX(0);opacity:0}}
+@keyframes pop{from{opacity:0;transform:scale(.96) translateY(8px)}}
+@keyframes fade{from{opacity:0}}
+@keyframes sheen{0%,60%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
+@keyframes stripes{to{background-position:16px 0}}
+@keyframes wv{0%,100%{transform:scaleY(.3)}50%{transform:scaleY(1)}}
+@keyframes kb{from{transform:scale(1) translate(0,0)}to{transform:scale(1.18) translate(-3%,2%)}}
+@keyframes pan{to{background-position:300% 0}}
+@keyframes spin{to{transform:rotate(360deg)}}
+header{animation:drop .5s cubic-bezier(.2,.7,.2,1) both}
+main>section:not(.hide) .page-head{animation:rise .5s .1s cubic-bezier(.2,.7,.2,1) both}
+.grid .card{animation:rise .65s cubic-bezier(.2,.7,.2,1) both}
+.grid>div:first-child .card:nth-child(1){animation-delay:.15s}
+.grid>div:first-child .card:nth-child(2){animation-delay:.28s}
+.grid>div:last-child .card:nth-child(1){animation-delay:.22s}
+.grid>div:last-child .card:nth-child(2){animation-delay:.34s}
+.health .card,.hist-row{animation:rise .45s both}
+.btn,.ratio button,.seg button,nav button,.drop{transition:background .2s,border-color .2s,color .2s,transform .15s,box-shadow .2s}
+.btn:active,.ratio button:active{transform:scale(.97)}
+.ratio button:hover{border-color:#5A5A63;transform:translateY(-2px)}
+.go{position:relative;overflow:hidden}
+.go::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,rgba(0,0,0,.16) 50%,transparent 70%);transform:translateX(-120%);animation:sheen 3.6s 1.2s infinite}
+.chip{display:inline-flex;gap:6px;align-items:baseline;border:1px solid var(--line);background:var(--panel);border-radius:99px;padding:5px 12px;font-size:12px;color:var(--muted)}
+.chip b{color:var(--text);font-size:13px}
+.tlwrap{position:relative;cursor:pointer}
+.tl.in div{transform-origin:left;animation:grow .6s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--k,0)*70ms)}
+#scenes.in .scene{animation:rise .5s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--k,0)*90ms)}
+.tl div{transition:outline-color .2s,filter .2s}
+.tl div.act{outline:2px solid #fff;outline-offset:1px;filter:brightness(1.35)}
+.scene{transition:border-color .25s,box-shadow .25s}
+.scene.live{border-color:#fff;box-shadow:0 0 0 1px #fff inset}
+.playhead{position:absolute;top:-6px;bottom:-6px;left:0;width:2px;background:#fff;box-shadow:0 0 10px #fff;border-radius:2px;pointer-events:none;opacity:0;transition:opacity .25s}
+.playhead::before{content:"";position:absolute;top:-4px;left:-4px;width:10px;height:10px;background:#fff;border-radius:50%}
+.playhead.on{opacity:1}
+.mini{cursor:pointer;position:relative;margin:0 auto 12px;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#050507;display:flex;align-items:flex-end;justify-content:center;aspect-ratio:16/9;width:100%;max-width:480px;max-height:240px;transition:width .3s}
+.mini .bg{position:absolute;inset:-12%;background:radial-gradient(circle at var(--x,30%) var(--y,40%),#55555D,#0A0A0C 68%)}
+.mini.run .bg{animation:kb 6s ease-in-out infinite alternate}
+.mini::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 45%,rgba(0,0,0,.75));pointer-events:none}
+.mini .cap{position:relative;z-index:2;padding:6px 12px;text-align:center;font-weight:600;font-size:12px;line-height:1.3;max-width:85%;margin:0 auto}
+.mini .w{opacity:.38;transition:opacity .15s}
+.mini .w.on{opacity:1}
+.mini .tc,.mini .sc{position:absolute;top:10px;z-index:2;font-size:11px;color:#C8C8CE}
+.mini .tc{left:12px}.mini .sc{right:12px}
+.wave{display:flex;align-items:center;justify-content:center;gap:3px;height:34px;margin-top:12px}
+.wave i{display:block;width:3px;height:var(--h);background:var(--muted);border-radius:2px;animation:wv 1.8s ease-in-out infinite}
+.wave.hot i{animation-duration:.45s;background:#fff}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:#fff;color:#0A0A0B;padding:10px 16px;border-radius:99px;font-weight:600;font-size:13px;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;z-index:100}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+dialog[open]{animation:pop .3s cubic-bezier(.2,.7,.2,1)}
+dialog[open]::backdrop{animation:fade .3s}
+.bar2 i{background-image:linear-gradient(135deg,rgba(0,0,0,.2) 25%,transparent 25% 50%,rgba(0,0,0,.2) 50% 75%,transparent 75%);background-size:16px 16px;animation:stripes .8s linear infinite}
+.stage .on::before{content:"";display:inline-block;width:10px;height:10px;border:2px solid #fff;border-right-color:transparent;border-radius:50%;margin-right:8px;animation:spin .7s linear infinite}
+.screen{background:linear-gradient(120deg,#050507,#34343A,#050507);background-size:300% 100%;animation:pan 8s linear infinite}
+.media-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;margin-top:16px}
+.media-card{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:10px;display:flex;flex-direction:column;gap:8px}
+.media-card video,.media-card img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:6px;background:#000}
+.media-thumb{position:relative;aspect-ratio:16/9;border-radius:6px;overflow:hidden;background:#111}
+.media-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <div class="brand">Vk-Media</div>
+    <nav role="tablist" aria-label="Sections" id="tabs">
+      <button role="tab" aria-selected="true" data-t="studio">Studio</button>
+      <button role="tab" aria-selected="false" data-t="library">Media library</button>
+      <button role="tab" aria-selected="false" data-t="history">Job history</button>
+      <button role="tab" aria-selected="false" data-t="health">System health</button>
+    </nav>
+
+  </div>
+</header>
+
+<main>
+<!-- STUDIO -->
+<section id="p-studio">
+  <div class="page-head">
+    <div>
+      <h1>Script to B-roll video</h1>
+      <p class="sub">Paste a script, split it into scenes, match footage, and render.</p>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span class="chip"><b class="mono" id="c1">0</b> scenes</span><span class="chip"><b class="mono" id="c2">0.0s</b> runtime</span><span class="chip"><b class="mono" id="c3">0s</b> est. render</span><button class="btn" id="sample">Load sample script</button></div>
+  </div>
+  <div class="grid">
+    <div>
+      <div class="card">
+        <div class="row"><h2>Script</h2><span class="meta mono" id="cad">0 words · 0.0s</span></div>
+        <label class="f" for="title">Project title</label>
+        <input type="text" id="title" placeholder="Deep ocean frontier" value="Deep ocean frontier">
+        <label class="f" for="script" style="margin-top:14px">Narration</label>
+        <textarea id="script" placeholder="Paste your narration here. Each sentence becomes a scene.">Turquoise waves crash onto rocky cliffs at sunset. Vibrant tropical fish swim across coral reefs. Far below, light fades into a silent, endless blue.</textarea>
+        <div class="row" style="margin:14px 0 0">
+          <span class="meta">Pacing assumes about 2.5 words per second.</span>
+          <button class="btn primary" id="seg">Split into scenes</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 style="margin-bottom:14px">Output format</h2>
+        <div class="ratio" id="ratio">
+          <button aria-pressed="true" data-r="16:9"><span class="shape" style="width:26px;height:15px"></span>16:9<br>Landscape</button>
+          <button aria-pressed="false" data-r="9:16"><span class="shape" style="width:15px;height:26px"></span>9:16<br>Vertical</button>
+          <button aria-pressed="false" data-r="1:1"><span class="shape" style="width:20px;height:20px"></span>1:1<br>Square</button>
+        </div>
+        <div class="fields" style="margin-top:14px">
+          <div class="two">
+            <div><label class="f" for="src">Footage source</label>
+              <select id="src"><option value="pixabay">Pixabay Video</option><option value="ai_generator">CogVideoX-2B (AI generated)</option><option value="local_cc0">Local CC0 library</option></select></div>
+            <div><label class="f" for="res">Resolution</label>
+              <select id="res"><option value="1080p">1080p, 30 fps</option><option value="720p">720p, 30 fps</option></select></div>
+          </div>
+          <div class="two">
+            <div><label class="f" for="pace">Pacing</label>
+              <select id="pace"><option value="balanced">Balanced</option><option value="fast">Fast, high energy</option><option value="slow">Slow, cinematic</option></select></div>
+            <div><label class="f" for="cap">Captions</label>
+              <select id="cap"><option value="bold_yellow">Bold yellow</option><option value="clean_white">Clean white</option><option value="word_by_word">Word-by-word highlight</option></select></div>
+          </div>
+        </div>
+        <div id="brand" class="meta hide" style="margin-top:14px;padding:10px;border:1px solid var(--line);border-radius:8px">Enterprise brand mode applies your approved fonts, colors, and logo placement to captions and end cards.</div>
+
+        <h2 style="margin:20px 0 14px">Voiceover</h2>
+        <label class="drop" for="aud" style="display:block">
+          <div style="font-weight:600">Upload voiceover</div>
+          <div class="meta" id="audname">WAV, MP3, M4A, or AAC</div><div class="wave" id="wave" aria-hidden="true"></div>
+          <input type="file" id="aud" accept="audio/*" class="hide">
+        </label>
+        <div class="sw"><label for="align">Match scene lengths to audio</label><input type="checkbox" id="align" checked></div>
+        <button class="btn primary go" id="gen" style="width:100%;padding:14px;font-size:15px;margin-top:10px">Generate video</button>
+        <div class="sum mono"><span id="sfmt">16:9 · 1080p</span><span id="stot">0 scenes · 0.0s</span></div>
+      </div>
+    </div>
+
+    <div class="sticky">
+      <div class="card">
+        <div class="row">
+          <div>
+            <h2>Scene timeline</h2>
+            <div class="meta" id="tlmeta"></div>
+            <div style="font-size:11px;margin-top:3px;color:var(--muted)">Video: <span class="mono" id="vname-display" style="color:var(--text);font-weight:600;background:var(--panel2);padding:1px 6px;border-radius:4px;border:1px solid var(--line)">Deep ocean frontier.mp4</span></div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center"><button class="btn" id="play">&#9654; Preview</button><a class="btn" id="btn-dl-video" href="#" download="Deep ocean frontier.mp4" style="text-decoration:none;display:inline-flex;align-items:center;gap:4px" title="Download Deep ocean frontier.mp4">&#11015; Download</a><button class="btn" id="add">+ Add scene</button></div>
+        </div>
+        <div class="mini" id="mini"><div class="bg"></div><video id="mvid" playsinline preload="auto" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;opacity:0;transition:opacity .4s"></video><span class="tc mono" id="mtc">00:00.0 / 00:00.0</span><span class="sc mono" id="msc"></span><button class="icon" id="mvid-audio" style="position:absolute;bottom:8px;right:8px;z-index:3;color:#fff;background:rgba(0,0,0,0.6);border-radius:4px;padding:4px 8px;font-size:12px;cursor:pointer" title="Audio on/off">&#128266;</button><div class="cap" id="mcap">Press Space or Preview to play your scenes. Click the timeline to jump.</div></div>
+        <div class="tlwrap" id="tlw"><div class="tl" id="tl" aria-hidden="true"></div><div class="playhead" id="ph"></div></div>
+        <div class="ruler mono" id="ruler"></div>
+        <div id="scenes"></div>
+        <div style="margin-top:14px">
+          <button class="btn primary go" id="btn-update-preview" style="width:100%;padding:14px;font-size:15px;margin-top:0" title="Render video from scenes and update preview player">
+            <span style="font-size:16px">&#10227;</span> Update the preview
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- OTHER TABS -->
+<section id="p-library" class="hide">
+  <div class="page-head"><div><h1>Media library</h1><p class="sub">Search licensed and generated clips.</p></div></div>
+  <div class="card">
+    <div style="display:flex;gap:10px">
+      <input type="text" id="q" placeholder="Search footage, for example “coral reef”">
+      <button class="btn primary" id="btn-search">Search</button>
+    </div>
+    <div id="lib-results" style="margin-top:16px">
+      <div class="empty"><h2>No search yet</h2>Enter a keyword to browse matching clips.</div>
+    </div>
+  </div>
+</section>
+
+<section id="p-history" class="hide">
+  <div class="page-head"><div><h1>Job history</h1><p class="sub">Recent renders and their exports.</p></div></div>
+  <div class="card" id="hist"><div class="empty"><h2>No renders yet</h2>Generated videos appear here.</div></div>
+</section>
+
+<section id="p-health" class="hide">
+  <div class="page-head"><div><h1>System health</h1><p class="sub">Status of the services behind each render.</p></div></div>
+  <div class="health">
+    <div class="card" id="h-ffmpeg"><span class="dot"></span><b>Render engine</b><div class="meta">FFmpeg · ready</div></div>
+    <div class="card" id="h-pixabay"><span class="dot"></span><b>Footage API</b><div class="meta">Pixabay · ready</div></div>
+    <div class="card" id="h-ai"><span class="dot"></span><b>AI generation</b><div class="meta">CogVideoX-2B · ready</div></div>
+    <div class="card" id="h-storage"><span class="dot"></span><b>Storage</b><div class="meta">Local output storage · ready</div></div>
+  </div>
+</section>
+</main>
+
+<div class="toast" id="toast" role="status"></div>
+
+<dialog id="dlg" aria-labelledby="dt">
+  <div class="row" style="margin:0"><h2 id="dt">Rendering video</h2><button class="btn" id="close">Close</button></div>
+  <div id="prog">
+    <div class="bar2"><i id="pb"></i></div>
+    <div class="stage" id="stg"></div>
+  </div>
+  <div id="done" class="hide">
+    <div class="screen" id="done-screen">1080p preview</div>
+    <div class="row" style="margin:0">
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <a class="btn" id="dl-srt" target="_blank" download>Captions (.srt)</a>
+        <a class="btn" id="dl-json" target="_blank" download>Timeline (.json)</a>
+      </div>
+      <a class="btn primary" id="dl-mp4" target="_blank" download>Download MP4</a>
+    </div>
+  </div>
+</dialog>
+
+<script>
+var COLORS = ['#74747E','#61616B','#52525B','#44444C','#38383F'];
+var SAMPLE_VIDEO_URL = '/output/sample/video.mp4';
+var SAMPLE_VIDEO_FALLBACK = '/sample_video.mp4';
+var SAMPLE_SCENES = [
+  {t:4.5, n:'Turquoise waves crash onto rocky cliffs at sunset.', v:'turquoise waves crashing rocky cliffs ocean sunset'},
+  {t:4.0, n:'Vibrant tropical fish swim across coral reefs.', v:'vibrant colorful tropical fish swimming coral reef underwater'},
+  {t:4.5, n:'Far below, light fades into a silent, endless blue.', v:'deep ocean blue water rays light silent abyss underwater'}
+];
+
+var scenes = JSON.parse(JSON.stringify(SAMPLE_SCENES));
+var ratio = '16:9';
+var activeJobId = null;
+var pollTimer = null;
+var lastVideoUrl = null;
+var isSampleLooping = true;
+var playing = false;
+var base = 0;
+var cur = 0;
+var raf = 0;
+
+var $ = function(i){ return document.getElementById(i); };
+
+function getVideoFilename(ext){
+  var t = ($('title') && $('title').value.trim()) || 'Deep ocean frontier';
+  var safe = t.replace(/[\\/:*?"<>|]+/g, '_').trim();
+  return (safe || 'video') + (ext || '.mp4');
+}
+
+function syncVideoFilename(customName){
+  var fn = customName || getVideoFilename('.mp4');
+  var dlTop = $('btn-dl-video');
+  if(dlTop){
+    dlTop.setAttribute('download', fn);
+    dlTop.title = 'Download ' + fn;
+  }
+  var dlMp4 = $('dl-mp4');
+  if(dlMp4){
+    dlMp4.setAttribute('download', fn);
+    dlMp4.textContent = 'Download ' + fn;
+  }
+  var vDisp = $('vname-display');
+  if(vDisp){
+    vDisp.textContent = fn;
+  }
+}
+function fmt(s){ return Number(s||0).toFixed(1) + 's'; }
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+function total(){ return scenes.reduce(function(a,s){ return a + Number(s.t||0); }, 0); }
+function words(s){ return (s.trim().match(/\S+/g) || []).length; }
+function count(el,to,f){ var from = el._v||0, s = performance.now(); el._v = to; (function k(n){ var p = Math.min(1,(n-s)/450), e = 1 - Math.pow(1-p,3); el.textContent = f(from+(to-from)*e); if(p<1) requestAnimationFrame(k); })(s); }
+function tc(s){ return ('0' + Math.floor(s/60)).slice(-2) + ':' + ('0' + (s%60).toFixed(1)).slice(-4); }
+function each(list,fn){ [].forEach.call(list, fn); }
+
+function applyRatio(){
+  var a = {'16:9': 16/9, '9:16': 9/16, '1:1': 1}[ratio];
+  var mini = $('mini');
+  if(mini){
+    mini.style.aspectRatio = a;
+    if(ratio === '9:16'){
+      mini.style.width = 'min(100%, 200px)';
+      mini.style.maxHeight = '270px';
+    } else if(ratio === '1:1'){
+      mini.style.width = 'min(100%, 250px)';
+      mini.style.maxHeight = '250px';
+    } else {
+      mini.style.width = '100%';
+      mini.style.maxWidth = '480px';
+      mini.style.maxHeight = '250px';
+    }
+  }
+}
+
+function upd(){
+  $('sfmt').textContent = ratio + ' · ' + $('res').value.split(',')[0];
+  var t = total();
+  $('stot').textContent = scenes.length + ' scenes · ' + fmt(t);
+}
+
+function render(){
+  var tot = total();
+  var tl = $('tl'), ruler = $('ruler'), tlmeta = $('tlmeta'), scenesEl = $('scenes');
+  if(tl) tl.innerHTML = scenes.map(function(s,i){ return '<div style="flex:' + s.t + ' 1 0;background:' + COLORS[i%5] + '">' + (i+1) + '</div>'; }).join('');
+  if(ruler) ruler.innerHTML = '<span>0.0s</span><span>' + fmt(tot) + '</span>';
+  if(tlmeta) tlmeta.textContent = scenes.length + ' scenes, ' + fmt(tot) + ' total';
+  $('stot').textContent = scenes.length + ' scenes · ' + fmt(tot);
+  
+  if(scenesEl){
+    scenesEl.innerHTML = scenes.length ? scenes.map(function(s,i){
+      return '<div class="scene"><div class="stripe" style="background:' + COLORS[i%5] + '"></div><div>' +
+      '<div class="top"><b>Scene ' + (i+1) + '</b><div class="dur"><span class="meta">Length</span>' +
+      '<input type="number" min="0.5" step="0.5" value="' + s.t + '" data-i="' + i + '" data-k="t" aria-label="Scene ' + (i+1) + ' length in seconds">' +
+      '<button class="icon" data-del="' + i + '" aria-label="Delete scene ' + (i+1) + '">&#128465;</button></div></div>' +
+      '<label class="f">Narration</label><input type="text" value="' + esc(s.n) + '" data-i="' + i + '" data-k="n">' +
+      '<label class="f" style="margin-top:10px">B-roll search</label>' +
+      '<div style="display:flex;gap:8px"><input type="text" value="' + esc(s.v) + '" data-i="' + i + '" data-k="v"><button class="btn" data-browse="' + i + '">Browse</button></div>' +
+      '</div></div>';
+    }).join('') : '<div class="empty"><h2>No scenes yet</h2>Split your script or add a scene to begin.</div>';
+  }
+
+  count($('c1'), scenes.length, function(v){ return Math.round(v); });
+  count($('c2'), tot, function(v){ return v.toFixed(1) + 's'; });
+  count($('c3'), scenes.length * 1.2 + tot * 0.4, function(v){ return Math.round(v) + 's'; });
+  
+  if(tl) each(tl.children, function(b,k){ b.style.setProperty('--k', k); });
+  if(scenesEl) each(scenesEl.querySelectorAll('.scene'), function(c,k){ c.style.setProperty('--k', k); });
+  
+  var mini = $('mini');
+  if(mini) mini._i = -1;
+  if(!playing) $('mtc').textContent = tc(cur) + ' / ' + tc(tot);
+}
+
+function frame(){
+  var t = total(), i = 0, acc = 0;
+  if(!scenes.length) return;
+  for(; i < scenes.length - 1 && cur >= acc + scenes[i].t; i++) acc += scenes[i].t;
+  var s = scenes[i], lp = Math.min(1, (cur - acc) / s.t), ws = (s.n || '').split(/\s+/).filter(Boolean);
+  var ph = $('ph');
+  if(ph) ph.style.left = (cur / t * 100) + '%';
+  var tl = $('tl'), scenesEl = $('scenes'), mini = $('mini');
+  if(tl) each(tl.children, function(b,j){ b.classList.toggle('act', j === i); });
+  if(scenesEl) each(scenesEl.querySelectorAll('.scene'), function(c,j){
+    c.classList.toggle('live', j === i);
+  });
+  if(mini && mini._i !== i){
+    mini._i = i;
+    mini.style.setProperty('--x', (20 + i*23) % 80 + '%');
+    mini.style.setProperty('--y', (30 + i*31) % 70 + '%');
+    var mc = $('mcap');
+    if(mc) mc.innerHTML = ws.map(function(w){ return '<span class="w">' + esc(w) + '</span>'; }).join(' ') || '&nbsp;';
+  }
+  var n = Math.floor(lp * ws.length * 1.15);
+  var mc = $('mcap');
+  if(mc) each(mc.children, function(w,k){ w.classList.toggle('on', k <= n); });
+  $('mtc').textContent = tc(cur) + ' / ' + tc(t);
+  $('msc').textContent = 'Scene ' + (i+1) + ' of ' + scenes.length;
+}
+
+function clearLive(){
+  var tl = $('tl'), scenesEl = $('scenes');
+  if(tl) each(tl.children, function(b){ b.classList.remove('act'); });
+  if(scenesEl) each(scenesEl.querySelectorAll('.scene'), function(c){ c.classList.remove('live'); });
+}
+
+function loop(now){
+  if(!playing) return;
+  var mvid = $('mvid');
+  if(lastVideoUrl && mvid && mvid.readyState >= 2){
+    cur = mvid.currentTime;
+  } else {
+    cur = (now - base) / 1000;
+  }
+  if(cur >= total()){
+    if(isSampleLooping){
+      cur = 0;
+      base = performance.now();
+      if(lastVideoUrl && mvid && mvid.src){
+        mvid.currentTime = 0;
+        mvid.play().catch(function(){});
+      }
+    } else {
+      stop(true);
+      return;
+    }
+  }
+  frame();
+  raf = requestAnimationFrame(loop);
+}
+
+function start(){
+  if(!scenes.length){ toast('Add a scene to preview'); return; }
+  // Stop modal dialog video if playing to prevent audio overlap
+  var dv = $('done-screen') ? $('done-screen').querySelector('video') : null;
+  if(dv && !dv.paused){ dv.pause(); }
+
+  if(cur >= total()) cur = 0;
+  playing = true;
+  base = performance.now() - cur * 1000;
+  var mini = $('mini'), ph = $('ph'), playBtn = $('play'), mvid = $('mvid');
+  if(mini) mini.classList.add('run');
+  if(ph) ph.classList.add('on');
+  if(playBtn) playBtn.innerHTML = '&#10074;&#10074; Pause';
+  $('wave').classList.add('hot');
+
+  if(lastVideoUrl && mvid && mvid.src){
+    mvid.currentTime = cur;
+    mvid.play().catch(function(){});
+  }
+  raf = requestAnimationFrame(loop);
+}
+
+function stop(end){
+  playing = false;
+  cancelAnimationFrame(raf);
+  var mini = $('mini'), ph = $('ph'), playBtn = $('play'), mvid = $('mvid');
+  if(mini) mini.classList.remove('run');
+  $('wave').classList.remove('hot');
+  if(playBtn) playBtn.innerHTML = '&#9654; Preview';
+  if(mvid) mvid.pause();
+  var dv = $('done-screen') ? $('done-screen').querySelector('video') : null;
+  if(dv) dv.pause();
+  if(end){
+    cur = 0;
+    if(ph) ph.classList.remove('on');
+    clearLive();
+    $('mtc').textContent = tc(0) + ' / ' + tc(total());
+    if(!isSampleLooping) toast('Preview finished');
+    if(mvid) mvid.currentTime = 0;
+  }
+}
+
+window.loadPreviewVideo = function(url){
+  lastVideoUrl = url;
+  var mvid = $('mvid');
+  if(mvid){
+    mvid.pause();
+    mvid.src = url;
+    mvid.load();
+    mvid.style.opacity = '1';
+  }
+  var dv = $('done-screen') ? $('done-screen').querySelector('video') : null;
+  if(dv && dv !== mvid){ dv.pause(); }
+  var dlTop = $('btn-dl-video');
+  if(dlTop && url){
+    dlTop.href = url;
+  }
+  var mini = $('mini');
+  if(mini){
+    var bg = mini.querySelector('.bg');
+    if(bg) bg.style.opacity = '0';
+  }
+  var mc = $('mcap');
+  if(mc) mc.style.display = 'none';
+};
+
+window.autoplaySampleVideo = function(){
+  isSampleLooping = true;
+  playing = true;
+  cur = 0;
+  base = performance.now();
+  var mini = $('mini'), ph = $('ph'), playBtn = $('play'), mvid = $('mvid');
+  if(mini) mini.classList.add('run');
+  if(ph) ph.classList.add('on');
+  $('wave').classList.add('hot');
+  if(playBtn) playBtn.innerHTML = '&#10074;&#10074; Pause';
+  
+  if(mvid){
+    mvid.currentTime = 0;
+    var p = mvid.play();
+    if(p && p.then){
+      p.catch(function(){
+        mvid.muted = true;
+        var ab = $('mvid-audio');
+        if(ab) ab.innerHTML = '&#128263;';
+        mvid.play().catch(function(e){ console.warn('Muted autoplay:', e); });
+      });
+    }
+  }
+  cancelAnimationFrame(raf);
+  raf = requestAnimationFrame(loop);
+};
+
+window.initSamplePreview = function(){
+  isSampleLooping = true;
+  scenes = JSON.parse(JSON.stringify(SAMPLE_SCENES));
+  $('title').value = 'Deep ocean frontier';
+  $('script').value = SAMPLE_SCENES.map(function(s){ return s.n; }).join(' ');
+  var w = words($('script').value);
+  $('cad').textContent = w + ' words · ' + fmt(w / 2.5);
+  render();
+  upd();
+  applyRatio();
+  loadPreviewVideo(SAMPLE_VIDEO_URL);
+  var dlTop = $('btn-dl-video');
+  if(dlTop){
+    dlTop.href = SAMPLE_VIDEO_URL;
+  }
+  syncVideoFilename();
+  autoplaySampleVideo();
+};
+
+function toast(m){
+  var t = $('toast');
+  if(t){
+    t.textContent = m;
+    t.classList.add('show');
+    clearTimeout(t._t);
+    t._t = setTimeout(function(){ t.classList.remove('show'); }, 2500);
+  }
+}
+
+// ───── Scene Management Listeners ─────
+$('scenes').addEventListener('change', function(e){
+  var i = e.target.dataset.i, k = e.target.dataset.k;
+  if(i == null) return;
+  scenes[i][k] = (k === 't') ? Math.max(0.5, parseFloat(e.target.value) || 1) : e.target.value;
+  render();
+});
+
+$('scenes').addEventListener('click', function(e){
+  var b = e.target.closest('[data-del]');
+  if(b){ scenes.splice(+b.dataset.del, 1); render(); return; }
+  var br = e.target.closest('[data-browse]');
+  if(br){
+    var idx = +br.dataset.browse;
+    var q = scenes[idx] ? scenes[idx].v : '';
+    $('q').value = q;
+    document.querySelector('nav button[data-t="library"]').click();
+    doSearch(q);
+  }
+});
+
+$('add').onclick = function(){ scenes.push({t: 3, n: '', v: ''}); render(); };
+
+$('script').addEventListener('input', function(){
+  var w = words(this.value);
+  $('cad').textContent = w + ' words · ' + fmt(w / 2.5);
+});
+
+var titleInput = $('title');
+if(titleInput){
+  titleInput.addEventListener('input', function(){
+    syncVideoFilename();
+  });
+  titleInput.addEventListener('change', function(){
+    syncVideoFilename();
+  });
+}
+
+$('seg').onclick = function(){
+  var txt = $('script').value.trim();
+  if(!txt){ $('script').focus(); return; }
+  var parts = txt.match(/[^.!?]+[.!?]*/g) || [txt];
+  scenes = parts.map(function(p){
+    p = p.trim();
+    var kw = p.replace(/[^\w\s]/g, '').split(/\s+/).slice(0, 5).join(' ').toLowerCase();
+    return { t: Math.max(2, Math.round(words(p) / 2.5 * 2) / 2), n: p, v: kw };
+  }).filter(function(s){ return s.n; });
+  render();
+};
+
+$('sample').onclick = function(){
+  initSamplePreview();
+  replay();
+  toast('Sample prompt and scenes loaded in preview');
+};
+
+$('ratio').onclick = function(e){
+  var b = e.target.closest('button');
+  if(!b) return;
+  ratio = b.dataset.r;
+  each(this.children, function(c){ c.setAttribute('aria-pressed', c === b); });
+  upd();
+  applyRatio();
+};
+
+$('res').onchange = upd;
+$('aud').onchange = function(){
+  var f = this.files[0];
+  if(!f){
+    $('audname').textContent = 'WAV, MP3, M4A, or AAC';
+    return;
+  }
+  $('audname').textContent = f.name;
+  try {
+    var a = new Audio();
+    var u = URL.createObjectURL(f);
+    a.src = u;
+    a.onloadedmetadata = function(){
+      var dur = a.duration;
+      if(dur && !isNaN(dur) && isFinite(dur)){
+        $('audname').textContent = f.name + ' (' + dur.toFixed(1) + 's)';
+        if($('align').checked && scenes.length > 0){
+          var oldTot = total();
+          if(oldTot > 0){
+            var scale = dur / oldTot;
+            var running = 0;
+            scenes.forEach(function(s, idx){
+              if(idx === scenes.length - 1){
+                s.t = Math.max(0.5, parseFloat((dur - running).toFixed(1)));
+              } else {
+                s.t = Math.max(0.5, parseFloat((s.t * scale).toFixed(1)));
+                running += s.t;
+              }
+            });
+          } else {
+            var per = Math.max(0.5, parseFloat((dur / scenes.length).toFixed(1)));
+            scenes.forEach(function(s){ s.t = per; });
+          }
+          render();
+          upd();
+          toast('Scene lengths matched to audio (' + dur.toFixed(1) + 's)');
+        }
+      }
+    };
+  } catch(e){}
+};
+
+var alignCb = $('align');
+if(alignCb){
+  alignCb.onchange = function(){
+    if(this.checked && $('aud').files[0]){
+      $('aud').onchange();
+    }
+  };
+}
+
+$('tabs').onclick = function(e){
+  var b = e.target.closest('button');
+  if(!b) return;
+  if(b.dataset.t !== 'studio'){
+    stop(false);
+    var v = $('done-screen') ? $('done-screen').querySelector('video') : null;
+    if(v) v.pause();
+  }
+  each(this.children, function(c){
+    c.setAttribute('aria-selected', c === b);
+    $('p-' + c.dataset.t).classList.toggle('hide', c !== b);
+  });
+  if(b.dataset.t === 'history') loadHistory();
+  if(b.dataset.t === 'health') loadHealth();
+};
+
+// ───── Real API Video Generation ─────
+var defaultStages = ['Matching footage to scenes', 'Trimming clips to length', 'Mixing voiceover', 'Burning in captions', 'Encoding MP4'];
+
+async function triggerVideoGeneration(options){
+  var isUpdatePreview = !!(options && options.isUpdatePreview);
+  if(!scenes.length){ toast('Please add at least one scene'); return; }
+  
+  // Pause any playing audio/video before generation to prevent overlap
+  stop(false);
+  var oldDv = $('done-screen') ? $('done-screen').querySelector('video') : null;
+  if(oldDv){ oldDv.pause(); oldDv.removeAttribute('src'); oldDv.load(); }
+  if($('done-screen')) $('done-screen').innerHTML = '';
+
+  var d = $('dlg');
+  $('prog').classList.remove('hide');
+  $('done').classList.add('hide');
+  $('dt').textContent = isUpdatePreview ? 'Updating preview' : 'Rendering video';
+  $('pb').style.width = '5%';
+  $('stg').innerHTML = '<div class="on">Validating script & media...</div>';
+  try {
+    if(!d.open){
+      if(d.showModal) d.showModal();
+      else d.setAttribute('open', '');
+    }
+  } catch(err){
+    d.setAttribute('open', '');
+  }
+
+  var af = $('aud').files[0];
+  var title = $('title').value.trim() || 'Untitled Video';
+  var resVal = $('res').value;
+
+  try {
+    var processedScenes = scenes.map(function(s, idx){
+      var n = (s.n || '').trim() || ('Scene ' + (idx + 1) + ' narration');
+      var t = parseFloat(s.t);
+      if(isNaN(t) || t < 0.5) t = 3.0;
+      var v = (s.v || '').trim();
+      if(v.length < 3) v = n.replace(/[^\w\s]/g, '').split(/\s+/).slice(0, 5).join(' ') || 'cinematic b-roll footage';
+      if(v.length < 3) v = 'cinematic b-roll footage';
+      return { narration: n, duration_seconds: t, visual_description: v };
+    });
+
+    var resp;
+    if(af){
+      var fd = new FormData();
+      fd.append('title', title);
+      fd.append('aspect_ratio', ratio);
+      fd.append('resolution', resVal);
+      fd.append('scenes', JSON.stringify(processedScenes));
+      fd.append('audio_file', af);
+      var isAlign = $('align').checked;
+      fd.append('auto_rebalance_scenes', isAlign ? 'true' : 'false');
+      fd.append('strict_duration_match', isAlign ? 'true' : 'false');
+      fd.append('strict_match', isAlign ? 'true' : 'false');
+      resp = await fetch('/v1/jobs/multipart', { method: 'POST', body: fd });
+    } else {
+      resp = await fetch('/v1/jobs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: title,
+          aspect_ratio: ratio,
+          resolution: resVal,
+          scenes: processedScenes
+        })
+      });
+    }
+
+    if(!resp.ok){
+      var err = await resp.json().catch(function(){ return { message: 'Failed to create job' }; });
+      var errMsg = 'Validation error';
+      if(err.details && Array.isArray(err.details)){
+        var cidItem = err.details.find(function(d){ return d.code === 'CORRELATION_ID'; });
+        if(cidItem){
+          errMsg = esc(err.message || 'An unexpected internal server error occurred.') + '<br><small style="color:var(--muted);font-weight:normal">Reference ID: ' + esc(cidItem.message) + '</small>';
+        } else {
+          errMsg = err.details.map(function(d){ return (d.field ? '<b>' + esc(d.field) + '</b>: ' : '') + esc(d.message); }).join('<br>');
+        }
+      } else if(err.detail){
+        errMsg = typeof err.detail === 'string' ? esc(err.detail) : esc(JSON.stringify(err.detail));
+      } else if(err.message){
+        errMsg = esc(err.message);
+      }
+      $('stg').innerHTML = '<div style="color:#fa5252;font-weight:600;line-height:1.4">Error: ' + errMsg + '</div>';
+      toast('Failed to start render');
+      return;
+    }
+
+    var data = await resp.json();
+    activeJobId = data.job_id;
+    pollJob(activeJobId, isUpdatePreview);
+  } catch(e) {
+    $('stg').innerHTML = '<div style="color:#fa5252">Network error: ' + esc(e.message) + '</div>';
+    toast('Connection error');
+  }
+}
+
+$('gen').onclick = function(){
+  triggerVideoGeneration({ isUpdatePreview: false });
+};
+
+var btnUpdPrev = $('btn-update-preview');
+if(btnUpdPrev){
+  btnUpdPrev.onclick = function(){
+    triggerVideoGeneration({ isUpdatePreview: true });
+  };
+}
+
+function pollJob(jobId, isUpdatePreview){
+  clearTimeout(pollTimer);
+  pollTimer = setTimeout(async function(){
+    try {
+      var r = await fetch('/v1/jobs/' + jobId);
+      if(!r.ok) return;
+      var data = await r.json();
+
+      $('pb').style.width = Math.max(5, Math.min(100, data.progress || 0)) + '%';
+      var stageTxt = data.stage_message || data.current_stage || 'Processing';
+      $('stg').innerHTML = '<div class="on">' + esc(stageTxt) + '</div>' +
+        defaultStages.map(function(s){
+          return '<div style="opacity:.6;font-size:12px;margin-top:4px">• ' + esc(s) + '</div>';
+        }).join('');
+
+      if(data.status === 'completed'){
+        clearTimeout(pollTimer);
+        activeJobId = null;
+        isSampleLooping = false;
+        $('pb').style.width = '100%';
+        
+        var vidUrl = '/output/' + jobId + '/video.mp4?t=' + Date.now();
+        // Do not autoplay in modal dialog to prevent duplicate audio echoing with preview player
+        $('done-screen').innerHTML = '<video src="' + vidUrl + '" controls playsinline preload="metadata" style="width:100%;height:100%;border-radius:10px;object-fit:contain;background:#000"></video>';
+        var dv = $('done-screen').querySelector('video');
+        if(dv){
+          dv.addEventListener('play', function(){ if(playing) stop(false); });
+        }
+        
+        var projectTitle = (data.title || $('title').value || 'video').trim();
+        var safeTitle = projectTitle.replace(/[\\/:*?"<>|]+/g, '_') || 'video';
+        var videoFileName = safeTitle + '.mp4';
+        syncVideoFilename(videoFileName);
+        
+        var dlNamedUrl = '/v1/jobs/' + jobId + '/download';
+        $('dl-mp4').href = dlNamedUrl;
+        $('dl-mp4').setAttribute('download', videoFileName);
+        $('dl-mp4').textContent = 'Download ' + videoFileName;
+        $('dl-srt').href = '/output/' + jobId + '/captions.srt';
+        $('dl-json').href = '/output/' + jobId + '/timeline.json';
+        
+        var dlTop = $('btn-dl-video');
+        if(dlTop){
+          dlTop.href = dlNamedUrl;
+          dlTop.setAttribute('download', videoFileName);
+          dlTop.title = 'Download ' + videoFileName;
+        }
+        
+        loadPreviewVideo(vidUrl);
+        start();
+        
+        loadHistory();
+
+        if(isUpdatePreview){
+          $('dlg').close();
+          toast('Preview updated successfully!');
+        } else {
+          $('prog').classList.add('hide');
+          $('done').classList.remove('hide');
+          $('dt').textContent = 'Render complete';
+          toast('New video generated and playing in preview!');
+        }
+        return;
+      }
+
+      if(data.status === 'failed' || data.status === 'cancelled'){
+        $('stg').innerHTML = '<div style="color:#fa5252;font-weight:600">Failed: ' + esc(data.error || data.stage_message || 'Rendering error') + '</div>';
+        toast('Render failed');
+        return;
+      }
+
+      pollJob(jobId, isUpdatePreview);
+    } catch(err) {
+      console.warn('Poll error:', err);
+      pollJob(jobId, isUpdatePreview);
+    }
+  }, 1000);
+}
+
+$('close').onclick = function(){
+  clearTimeout(pollTimer);
+  $('dlg').close();
+  var v = $('done-screen').querySelector('video');
+  if(v) v.pause();
+};
+
+async function loadHistory(){
+  try {
+    var r = await fetch('/v1/jobs?limit=30');
+    if(!r.ok) return;
+    var res = await r.json();
+    var list = res.jobs || [];
+    var h = $('hist');
+    if(!list.length){
+      h.innerHTML = '<div class="empty"><h2>No renders yet</h2>Generated videos appear here.</div>';
+      return;
+    }
+    h.innerHTML = list.map(function(j){
+      var isOk = j.status === 'completed';
+      var isRun = j.status === 'running' || j.status === 'queued';
+      var badgeStyle = isOk ? '' : (isRun ? 'color:#fab005;border-color:#fab005' : 'color:#fa5252;border-color:#fa5252');
+      return '<div class="hist-row">' +
+        '<div><b>' + esc(j.title || 'Untitled') + '</b><div class="meta mono">' + esc(j.aspect_ratio) + ' · ' + fmt(j.duration_seconds) + ' · ' + (j.created_at_utc ? j.created_at_utc.slice(0,10) : '') + '</div></div>' +
+        '<div style="display:flex;gap:10px;align-items:center">' +
+        '<span class="pill" style="' + badgeStyle + '">' + esc(j.status) + '</span>' +
+        (isOk ? '<button class="btn" onclick="openArtifact(\'' + j.job_id + '\',\'' + esc(j.title) + '\')">Watch</button>' : '') +
+        '</div></div>';
+    }).join('');
+  } catch(e) {
+    console.error('History load error:', e);
+  }
+}
+
+window.openArtifact = function(jobId, title){
+  $('prog').classList.add('hide');
+  $('done').classList.remove('hide');
+  $('dt').textContent = title || 'Completed Render';
+  stop(false);
+  var vidUrl = '/output/' + jobId + '/video.mp4';
+  $('done-screen').innerHTML = '<video src="' + vidUrl + '" controls playsinline preload="metadata" style="width:100%;height:100%;border-radius:10px;object-fit:contain;background:#000"></video>';
+  var dv = $('done-screen').querySelector('video');
+  if(dv){
+    dv.addEventListener('play', function(){ if(playing) stop(false); });
+  }
+  $('dl-mp4').href = vidUrl;
+  $('dl-srt').href = '/output/' + jobId + '/captions.srt';
+  $('dl-json').href = '/output/' + jobId + '/timeline.json';
+  $('dlg').showModal();
+};
+
+async function loadHealth(){
+  try {
+    var r = await fetch('/health/ready').catch(function(){ return null; });
+    if(!r || !r.ok) r = await fetch('/health').catch(function(){ return null; });
+    var d = (r && r.ok) ? await r.json().catch(function(){ return { status: 'unknown' }; }) : { status: 'unknown' };
+    
+    var setDot = function(elId, isHealthy, text){
+      var el = $(elId);
+      if(!el) return;
+      var dot = el.querySelector('.dot');
+      var meta = el.querySelector('.meta');
+      if(dot) dot.style.background = isHealthy ? '#40c057' : '#fa5252';
+      if(meta) meta.textContent = text;
+    };
+
+    var ffmpegOk = !!(d.checks?.media_binaries?.ffmpeg_available ?? d.checks?.ffmpeg_installed);
+    setDot('h-ffmpeg', ffmpegOk, 'FFmpeg · ' + (ffmpegOk ? 'ready' : 'missing'));
+
+    var pResp = await fetch('/v1/providers').catch(function(){ return null; });
+    if(pResp && pResp.ok){
+      var pList = await pResp.json();
+      var pix = pList.find(function(p){ return p.name === 'pixabay'; });
+      var ai = pList.find(function(p){ return p.name === 'ai_generator'; });
+      setDot('h-pixabay', !!pix?.is_healthy, 'Pixabay API · ' + (pix?.is_healthy ? 'ready' : 'unconfigured'));
+      setDot('h-ai', !!ai?.is_healthy, 'AI generator · ' + (ai?.is_healthy ? 'ready' : 'offline'));
+    }
+    var storageOk = !!(d.checks?.storage?.writable ?? d.checks?.output_storage?.writable);
+    setDot('h-storage', storageOk, 'Storage · ' + (storageOk ? 'mounted & ready' : 'error'));
+  } catch(e) {
+    console.warn('Health check failed', e);
+  }
+}
+
+async function doSearch(q){
+  q = (q || '').trim();
+  var cont = $('lib-results');
+  if(!q){
+    cont.innerHTML = '<div class="empty"><h2>Enter a search query</h2>Type a keyword to discover B-roll clips.</div>';
+    return;
+  }
+  cont.innerHTML = '<div style="padding:20px;text-align:center;color:var(--muted)">Searching footage for "' + esc(q) + '"...</div>';
+  try {
+    var r = await fetch('/v1/media/search?query=' + encodeURIComponent(q) + '&limit=12');
+    if(!r.ok) throw new Error('Search failed (' + r.status + ')');
+    var d = await r.json();
+    var list = d.candidates || [];
+    if(!list.length){
+      cont.innerHTML = '<div class="empty"><h2>No media found</h2>Try searching a broader topic like "nature", "city", or "ocean".</div>';
+      return;
+    }
+    cont.innerHTML = '<div class="media-grid">' + list.map(function(item){
+      var thumbUrl = item.preview_url || '';
+      var vidUrl = item.download_url || item.source_url || '';
+      return '<div class="media-card">' +
+        '<div class="media-thumb" data-vid="' + vidUrl + '">' +
+        '<img src="' + thumbUrl + '" alt="' + esc(item.title) + '" loading="lazy">' +
+        '</div>' +
+        '<div style="font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="' + esc(item.title) + '">' + esc(item.title) + '</div>' +
+        '<div class="meta" style="font-size:11px">' + esc(item.aspect_ratio || '16:9') + ' · ' + fmt(item.duration_seconds) + ' · ' + esc(item.provider) + '</div>' +
+        '<button class="btn" style="font-size:11px;padding:4px 8px" onclick="useMediaInScene(\'' + esc(item.title) + '\')">Use in Scene</button>' +
+        '</div>';
+    }).join('') + '</div>';
+
+    each(cont.querySelectorAll('.media-thumb'), function(el){
+      el.addEventListener('mouseenter', function(){
+        var u = el.dataset.vid;
+        if(u && u.endsWith('.mp4')){
+          var v = document.createElement('video');
+          v.src = u; v.muted = true; v.autoplay = true; v.loop = true;
+          v.style.position = 'absolute'; v.style.inset = '0'; v.style.width = '100%'; v.style.height = '100%';
+          v.style.objectFit = 'cover';
+          el.appendChild(v);
+        }
+      });
+      el.addEventListener('mouseleave', function(){
+        var v = el.querySelector('video');
+        if(v){ v.pause(); v.remove(); }
+      });
+    });
+  } catch(e) {
+    cont.innerHTML = '<div class="empty"><h2>Search error</h2>' + esc(e.message) + '</div>';
+  }
+}
+
+$('btn-search').onclick = function(){ doSearch($('q').value); };
+$('q').addEventListener('keydown', function(e){ if(e.key === 'Enter') doSearch(this.value); });
+
+window.useMediaInScene = function(text){
+  if(!scenes.length) scenes.push({ t: 3.5, n: text, v: text });
+  else {
+    var last = scenes[scenes.length - 1];
+    last.v = text;
+  }
+  render();
+  document.querySelector('nav button[data-t="studio"]').click();
+  toast('Updated scene B-roll keyword');
+};
+
+// ───── Player Event Bindings ─────
+var mvidAudioBtn = $('mvid-audio');
+if(mvidAudioBtn){
+  mvidAudioBtn.onclick = function(e){
+    e.stopPropagation();
+    var mv = $('mvid');
+    if(mv){
+      mv.muted = !mv.muted;
+      this.innerHTML = mv.muted ? '&#128263;' : '&#128266;';
+      toast(mv.muted ? 'Audio muted' : 'Audio unmuted');
+    }
+  };
+}
+
+var mvid = $('mvid');
+if(mvid){
+  mvid.addEventListener('ended', function(){
+    if(isSampleLooping){
+      cur = 0;
+      base = performance.now();
+      mvid.currentTime = 0;
+      mvid.play().catch(function(){});
+    } else if(playing){
+      stop(true);
+    }
+  });
+
+  mvid.addEventListener('canplay', function(){
+    if(isSampleLooping && playing && mvid.paused){
+      mvid.play().catch(function(){
+        mvid.muted = true;
+        var ab = $('mvid-audio');
+        if(ab) ab.innerHTML = '&#128263;';
+        mvid.play().catch(function(){});
+      });
+    }
+  });
+
+  mvid.addEventListener('error', function(){
+    if(lastVideoUrl === SAMPLE_VIDEO_URL){
+      console.warn('Falling back to direct /sample_video.mp4');
+      loadPreviewVideo(SAMPLE_VIDEO_FALLBACK);
+    }
+  });
+}
+
+$('play').onclick = function(){ playing ? stop() : start(); };
+
+var dlTopBtn = $('btn-dl-video');
+if(dlTopBtn){
+  dlTopBtn.addEventListener('click', function(e){
+    syncVideoFilename();
+    if(!lastVideoUrl || this.getAttribute('href') === '#'){
+      e.preventDefault();
+      toast('No video generated yet. Click Generate Video first!');
+    }
+  });
+}
+
+var mini = $('mini');
+if(mini){
+  mini.addEventListener('click', function(e){
+    if(e.target.id === 'mvid-audio' || e.target.closest('#mvid-audio')) return;
+    playing ? stop() : start();
+  });
+}
+
+var tlw = $('tlw');
+if(tlw){
+  tlw.addEventListener('click', function(e){
+    if(!scenes.length) return;
+    var r = tlw.getBoundingClientRect();
+    cur = Math.max(0, Math.min(0.999, (e.clientX - r.left) / r.width)) * total();
+    base = performance.now() - cur * 1000;
+    var ph = $('ph');
+    if(ph) ph.classList.add('on');
+    var mv = $('mvid');
+    if(lastVideoUrl && mv && mv.readyState >= 1){
+      mv.currentTime = cur;
+    }
+    frame();
+  });
+}
+
+document.addEventListener('keydown', function(e){
+  if(e.code === 'Space' && !/INPUT|TEXTAREA|SELECT|BUTTON/.test(e.target.tagName) && !$('dlg').open && !$('p-studio').classList.contains('hide')){
+    e.preventDefault();
+    playing ? stop() : start();
+  }
+});
+
+function replay(){
+  ['tl', 'scenes'].forEach(function(id){
+    var e = $(id);
+    if(e){
+      e.classList.remove('in');
+      void e.offsetWidth;
+      e.classList.add('in');
+      clearTimeout(e._t);
+      e._t = setTimeout(function(){ e.classList.remove('in'); }, 1500);
+    }
+  });
+}
+
+$('seg').addEventListener('click', function(){ replay(); toast('Split into ' + scenes.length + ' scenes'); });
+$('add').addEventListener('click', function(){ replay(); toast('Scene added'); });
+$('wave').innerHTML = Array.apply(null, Array(36)).map(function(_,i){
+  return '<i style="--h:' + (30 + Math.floor(Math.abs(Math.sin(i*1.7))*70)) + '%;animation-delay:-' + (i*0.11).toFixed(2) + 's"></i>';
+}).join('');
+
+// First pointer/click interaction restores sound if browser started muted
+document.addEventListener('pointerdown', function unmuteFirstClick(){
+  var mv = $('mvid');
+  if(mv && mv.muted && isSampleLooping){
+    mv.muted = false;
+    var ab = $('mvid-audio');
+    if(ab) ab.innerHTML = '&#128266;';
+  }
+  document.removeEventListener('pointerdown', unmuteFirstClick);
+}, { once: true });
+
+// ───── Initial Studio Launch: Run sample video & split scenes ─────
+initSamplePreview();
+replay();
+</script>
+</body>
+</html>

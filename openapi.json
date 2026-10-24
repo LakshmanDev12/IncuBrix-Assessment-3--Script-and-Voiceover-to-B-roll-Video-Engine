@@ -1,0 +1,2140 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Script and Voiceover to B-roll Video Engine",
+    "description": "Production-grade engine that ingests video scripts, scene plans, and audio narration to synthesize fully synchronized 1080p B-roll videos, subtitle tracks, timelines, and manifests.",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Service health check",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health/live": {
+      "get": {
+        "summary": "Liveness probe",
+        "description": "Fast liveness check verifying the application process is running.",
+        "operationId": "health_live_health_live_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health/ready": {
+      "get": {
+        "summary": "Readiness probe",
+        "description": "Deep readiness check evaluating:\n1. Database connectivity\n2. Output storage directory write access\n3. Free disk space against configurable threshold (MIN_DISK_FREE_BYTES)\n4. Media pipeline binaries (FFmpeg & FFprobe)\n5. Background worker state",
+        "operationId": "health_ready_health_ready_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/limits": {
+      "get": {
+        "tags": [
+          "Video Engine v1"
+        ],
+        "summary": "Get active engine validation limits",
+        "description": "Returns active runtime constraints and validation boundaries.",
+        "operationId": "get_limits_v1_limits_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LimitsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/jobs": {
+      "post": {
+        "tags": [
+          "Video Engine v1"
+        ],
+        "summary": "Create a new render job",
+        "description": "Submits a validated script-to-video render job.\nAccepts scene definitions, aspect ratio, resolution, and optional public audio URL.\nSupports Idempotency-Key header or deterministic body fingerprint to avoid duplicate processing.",
+        "operationId": "create_job_v1_jobs_post",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RenderJobCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/jobs/multipart": {
+      "post": {
+        "tags": [
+          "Video Engine v1"
+        ],
+        "summary": "Create job with optional audio upload",
+        "description": "Submits a render job with either an uploaded audio file or a validated audio URL.\nExplicit rejection rule: Providing BOTH an uploaded audio file and an audio URL will result in HTTP 400.\nSupports Idempotency-Key header to prevent duplicate submissions.",
+        "operationId": "create_job_multipart_v1_jobs_multipart_post",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_create_job_multipart_v1_jobs_multipart_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/audio/validate-url": {
+      "post": {
+        "tags": [
+          "Video Engine v1"
+        ],
+        "summary": "Probe and validate an external audio URL",
+        "description": "Checks whether an audio URL is reachable, valid, bounded in size, and safe from SSRF.",
+        "operationId": "validate_audio_url_endpoint_v1_audio_validate_url_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object",
+                "title": "Payload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/jobs/{job_id}": {
+      "get": {
+        "tags": [
+          "Video Engine v1"
+        ],
+        "summary": "Get job status and progress",
+        "description": "Fetches real-time status, progress, stage, and manifest for a given job ID.",
+        "operationId": "get_job_v1_jobs__job_id__get",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/jobs/{job_id}/cancel": {
+      "post": {
+        "tags": [
+          "Video Engine v1"
+        ],
+        "summary": "Cancel an in-progress job",
+        "description": "Requests cancellation of a queued or active job.",
+        "operationId": "cancel_job_v1_jobs__job_id__cancel_post",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CancelJobResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/jobs/{job_id}/artifacts": {
+      "get": {
+        "tags": [
+          "Video Engine v1"
+        ],
+        "summary": "List job artifacts with metadata",
+        "description": "Lists generated artifacts (video, timeline, captions, manifest) with sizes, hashes, and download links.",
+        "operationId": "get_job_artifacts_v1_jobs__job_id__artifacts_get",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtifactsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/jobs/{job_id}/artifacts/{artifact_name}": {
+      "get": {
+        "tags": [
+          "Video Engine v1"
+        ],
+        "summary": "Download specific artifact file",
+        "description": "Securely downloads a generated artifact file, enforcing path-traversal and file-access protection.",
+        "operationId": "download_artifact_v1_jobs__job_id__artifacts__artifact_name__get",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job Id"
+            }
+          },
+          {
+            "name": "artifact_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Artifact Name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/scenes/segment": {
+      "post": {
+        "tags": [
+          "Video Engine v1"
+        ],
+        "summary": "Segment script into coherent scenes",
+        "description": "Splits continuous script text into coherent scenes using punctuation boundaries and length constraints,\npreserves original narration text verbatim, and calculates positive durations according to audio or cadence.",
+        "operationId": "segment_script_endpoint_v1_scenes_segment_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SegmentationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SegmentationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/media/rank": {
+      "post": {
+        "tags": [
+          "Video Engine v1"
+        ],
+        "summary": "Rank candidate visual media by relevance",
+        "description": "Ranks candidate visual media against a visual description using multi-feature relevance scoring\n(TF-IDF lexical cosine, n-gram phrase match, tag alignment, duration fit, aspect ratio compatibility).\nExposes full auditable reasons and component breakdown.",
+        "operationId": "rank_media_endpoint_v1_media_rank_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MediaRankingRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MediaRankingResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/providers": {
+      "get": {
+        "tags": [
+          "Video Engine v1"
+        ],
+        "summary": "List registered media providers",
+        "description": "Returns active media providers, health status, and remote capability flags.",
+        "operationId": "list_media_providers_v1_providers_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ProviderItemResponse"
+                  },
+                  "type": "array",
+                  "title": "Response List Media Providers V1 Providers Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/media/search": {
+      "get": {
+        "tags": [
+          "Video Engine v1"
+        ],
+        "summary": "Search B-roll candidates from lawful providers",
+        "description": "Searches lawful media providers for B-roll clips matching query keywords,\nvalidates license compliance, and records provenance metadata.",
+        "operationId": "search_media_candidates_v1_media_search_get",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Query"
+            }
+          },
+          {
+            "name": "provider",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Provider"
+            }
+          },
+          {
+            "name": "target_duration",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Target Duration"
+            }
+          },
+          {
+            "name": "aspect_ratio",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "16:9",
+              "title": "Aspect Ratio"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MediaSearchResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/jobs/{job_id}/files": {
+      "get": {
+        "tags": [
+          "Video Engine v1"
+        ],
+        "summary": "Legacy file map endpoint",
+        "description": "Preserves backwards compatibility with initial starter pack test contracts.",
+        "operationId": "legacy_job_files_v1_jobs__job_id__files_get",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AlignedNarrationSegment": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Text",
+            "description": "Spoken narration text for this segment"
+          },
+          "start_seconds": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Start Seconds",
+            "description": "Start timestamp in seconds"
+          },
+          "end_seconds": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "End Seconds",
+            "description": "End timestamp in seconds"
+          },
+          "speaker": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Speaker",
+            "description": "Optional speaker label"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence",
+            "description": "Alignment confidence"
+          }
+        },
+        "type": "object",
+        "required": [
+          "text",
+          "start_seconds",
+          "end_seconds"
+        ],
+        "title": "AlignedNarrationSegment"
+      },
+      "ArtifactItem": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "content_type": {
+            "type": "string",
+            "title": "Content Type"
+          },
+          "size_bytes": {
+            "type": "integer",
+            "title": "Size Bytes"
+          },
+          "sha256": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sha256"
+          },
+          "download_url": {
+            "type": "string",
+            "title": "Download Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "content_type",
+          "size_bytes",
+          "download_url"
+        ],
+        "title": "ArtifactItem"
+      },
+      "ArtifactsResponse": {
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "title": "Job Id"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "queued",
+              "processing",
+              "completed",
+              "failed",
+              "cancelled"
+            ],
+            "title": "Status"
+          },
+          "artifacts": {
+            "items": {
+              "$ref": "#/components/schemas/ArtifactItem"
+            },
+            "type": "array",
+            "title": "Artifacts"
+          },
+          "created_at_utc": {
+            "type": "string",
+            "title": "Created At Utc"
+          }
+        },
+        "type": "object",
+        "required": [
+          "job_id",
+          "status",
+          "artifacts",
+          "created_at_utc"
+        ],
+        "title": "ArtifactsResponse"
+      },
+      "AudioInputMetadata": {
+        "properties": {
+          "source_type": {
+            "type": "string",
+            "enum": [
+              "none",
+              "upload",
+              "url"
+            ],
+            "title": "Source Type",
+            "default": "none"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          },
+          "filename": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Filename"
+          },
+          "size_bytes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Size Bytes"
+          },
+          "duration_seconds": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration Seconds"
+          },
+          "mime_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mime Type"
+          },
+          "codec": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Codec"
+          },
+          "format_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Format Name"
+          },
+          "sample_rate": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sample Rate"
+          },
+          "channels": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Channels"
+          },
+          "bit_rate": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bit Rate"
+          }
+        },
+        "type": "object",
+        "title": "AudioInputMetadata"
+      },
+      "Body_create_job_multipart_v1_jobs_multipart_post": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "default": "Demo video"
+          },
+          "aspect_ratio": {
+            "type": "string",
+            "title": "Aspect Ratio",
+            "default": "16:9"
+          },
+          "resolution": {
+            "type": "string",
+            "title": "Resolution",
+            "default": "1080p"
+          },
+          "scenes": {
+            "type": "string",
+            "title": "Scenes",
+            "description": "JSON string array of scenes"
+          },
+          "audio_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audio Url"
+          },
+          "script": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Script"
+          },
+          "auto_rebalance_scenes": {
+            "type": "boolean",
+            "title": "Auto Rebalance Scenes",
+            "default": false
+          },
+          "audio_file": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "binary"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audio File"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scenes"
+        ],
+        "title": "Body_create_job_multipart_v1_jobs_multipart_post"
+      },
+      "CancelJobResponse": {
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "title": "Job Id"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "cancelled"
+            ],
+            "const": "cancelled",
+            "title": "Status"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "cancelled_at_utc": {
+            "type": "string",
+            "title": "Cancelled At Utc"
+          }
+        },
+        "type": "object",
+        "required": [
+          "job_id",
+          "status",
+          "message",
+          "cancelled_at_utc"
+        ],
+        "title": "CancelJobResponse"
+      },
+      "CandidateMediaItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Unique candidate identifier"
+          },
+          "provider": {
+            "type": "string",
+            "title": "Provider",
+            "description": "Originating provider (e.g. 'local_cc0', 'pexels')",
+            "default": "local_cc0"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Title",
+            "description": "Candidate title or clip name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "description": "Descriptive visual text or scene context",
+            "default": ""
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tags",
+            "description": "Keywords or thematic tags"
+          },
+          "duration_seconds": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Duration Seconds",
+            "description": "Duration of candidate clip in seconds"
+          },
+          "aspect_ratio": {
+            "type": "string",
+            "enum": [
+              "16:9",
+              "9:16",
+              "1:1"
+            ],
+            "title": "Aspect Ratio",
+            "description": "Aspect ratio of candidate",
+            "default": "16:9"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
+          },
+          "source_page_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Page Url"
+          },
+          "download_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Download Url"
+          },
+          "preview_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preview Url"
+          },
+          "creator": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Creator",
+            "default": "Open Media Contributor"
+          },
+          "creator_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Creator Url"
+          },
+          "license_name": {
+            "type": "string",
+            "title": "License Name",
+            "default": "CC0"
+          },
+          "license_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "License Url"
+          },
+          "attribution": {
+            "type": "string",
+            "title": "Attribution",
+            "default": "Public Domain / CC0"
+          },
+          "attribution_required": {
+            "type": "boolean",
+            "title": "Attribution Required",
+            "default": false
+          },
+          "usage_restrictions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Usage Restrictions"
+          },
+          "verification_status": {
+            "type": "string",
+            "enum": [
+              "verified",
+              "unverified",
+              "incompatible_license",
+              "revoked"
+            ],
+            "title": "Verification Status",
+            "default": "verified"
+          },
+          "verified": {
+            "type": "boolean",
+            "title": "Verified",
+            "default": true
+          },
+          "media_type": {
+            "type": "string",
+            "enum": [
+              "video",
+              "image"
+            ],
+            "title": "Media Type",
+            "default": "video"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "duration_seconds"
+        ],
+        "title": "CandidateMediaItem"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "JobLinks": {
+        "properties": {
+          "self": {
+            "type": "string",
+            "title": "Self"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "artifacts": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Artifacts"
+          },
+          "cancel": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cancel"
+          }
+        },
+        "type": "object",
+        "required": [
+          "self",
+          "status"
+        ],
+        "title": "JobLinks"
+      },
+      "JobResponse": {
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "title": "Job Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "queued",
+              "processing",
+              "completed",
+              "failed",
+              "cancelled"
+            ],
+            "title": "Status"
+          },
+          "progress": {
+            "type": "number",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Progress",
+            "description": "Job progress percentage from 0.0 to 100.0"
+          },
+          "current_stage": {
+            "type": "string",
+            "enum": [
+              "queued",
+              "validating",
+              "segmenting",
+              "fetching_media",
+              "processing_media",
+              "assembling_timeline",
+              "rendering",
+              "generating_artifacts",
+              "completed",
+              "failed",
+              "cancelled"
+            ],
+            "title": "Current Stage"
+          },
+          "stage_message": {
+            "type": "string",
+            "title": "Stage Message"
+          },
+          "aspect_ratio": {
+            "type": "string",
+            "enum": [
+              "16:9",
+              "9:16",
+              "1:1"
+            ],
+            "title": "Aspect Ratio"
+          },
+          "resolution": {
+            "type": "string",
+            "enum": [
+              "1080p",
+              "720p"
+            ],
+            "title": "Resolution"
+          },
+          "duration_seconds": {
+            "type": "number",
+            "title": "Duration Seconds"
+          },
+          "scenes_count": {
+            "type": "integer",
+            "title": "Scenes Count"
+          },
+          "audio_source": {
+            "type": "string",
+            "enum": [
+              "none",
+              "upload",
+              "url"
+            ],
+            "title": "Audio Source"
+          },
+          "audio_details": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AudioInputMetadata"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "auto_rebalance_scenes": {
+            "type": "boolean",
+            "title": "Auto Rebalance Scenes",
+            "default": false
+          },
+          "created_at_utc": {
+            "type": "string",
+            "title": "Created At Utc"
+          },
+          "started_at_utc": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started At Utc"
+          },
+          "completed_at_utc": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At Utc"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "manifest": {
+            "anyOf": [
+              {
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Manifest"
+          },
+          "links": {
+            "$ref": "#/components/schemas/JobLinks"
+          }
+        },
+        "type": "object",
+        "required": [
+          "job_id",
+          "title",
+          "status",
+          "progress",
+          "current_stage",
+          "stage_message",
+          "aspect_ratio",
+          "resolution",
+          "duration_seconds",
+          "scenes_count",
+          "audio_source",
+          "created_at_utc",
+          "links"
+        ],
+        "title": "JobResponse"
+      },
+      "LimitsResponse": {
+        "properties": {
+          "min_title_length": {
+            "type": "integer",
+            "title": "Min Title Length"
+          },
+          "max_title_length": {
+            "type": "integer",
+            "title": "Max Title Length"
+          },
+          "min_scenes": {
+            "type": "integer",
+            "title": "Min Scenes"
+          },
+          "max_scenes": {
+            "type": "integer",
+            "title": "Max Scenes"
+          },
+          "min_scene_duration_seconds": {
+            "type": "number",
+            "title": "Min Scene Duration Seconds"
+          },
+          "max_scene_duration_seconds": {
+            "type": "number",
+            "title": "Max Scene Duration Seconds"
+          },
+          "min_job_duration_seconds": {
+            "type": "number",
+            "title": "Min Job Duration Seconds"
+          },
+          "max_job_duration_seconds": {
+            "type": "number",
+            "title": "Max Job Duration Seconds"
+          },
+          "max_audio_file_size_bytes": {
+            "type": "integer",
+            "title": "Max Audio File Size Bytes"
+          },
+          "max_audio_duration_seconds": {
+            "type": "number",
+            "title": "Max Audio Duration Seconds"
+          },
+          "allowed_aspect_ratios": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Allowed Aspect Ratios"
+          },
+          "allowed_resolutions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Allowed Resolutions"
+          },
+          "allowed_audio_extensions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Allowed Audio Extensions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "min_title_length",
+          "max_title_length",
+          "min_scenes",
+          "max_scenes",
+          "min_scene_duration_seconds",
+          "max_scene_duration_seconds",
+          "min_job_duration_seconds",
+          "max_job_duration_seconds",
+          "max_audio_file_size_bytes",
+          "max_audio_duration_seconds",
+          "allowed_aspect_ratios",
+          "allowed_resolutions",
+          "allowed_audio_extensions"
+        ],
+        "title": "LimitsResponse"
+      },
+      "MediaMetadata": {
+        "properties": {
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url",
+            "description": "Public URL of the media clip or image"
+          },
+          "license_name": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "License Name",
+            "description": "License identifier (e.g., CC0, CC-BY-4.0, Pexels License)",
+            "default": "UNVERIFIED \u2014 replace with verified licence"
+          },
+          "attribution": {
+            "type": "string",
+            "maxLength": 500,
+            "title": "Attribution",
+            "description": "Author or source attribution string",
+            "default": "UNVERIFIED \u2014 attribution required"
+          },
+          "media_type": {
+            "type": "string",
+            "enum": [
+              "video",
+              "image"
+            ],
+            "title": "Media Type",
+            "description": "Type of visual media",
+            "default": "video"
+          },
+          "verified": {
+            "type": "boolean",
+            "title": "Verified",
+            "description": "Whether license & source have been verified",
+            "default": false
+          }
+        },
+        "type": "object",
+        "title": "MediaMetadata"
+      },
+      "MediaRankingRequest": {
+        "properties": {
+          "query_description": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Query Description",
+            "description": "Scene visual description or target cue"
+          },
+          "target_duration": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Duration",
+            "description": "Target scene duration in seconds for temporal fit scoring"
+          },
+          "target_aspect_ratio": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "16:9",
+                  "9:16",
+                  "1:1"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Aspect Ratio",
+            "description": "Target aspect ratio",
+            "default": "16:9"
+          },
+          "candidates": {
+            "items": {
+              "$ref": "#/components/schemas/CandidateMediaItem"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Candidates",
+            "description": "List of candidate media items to rank"
+          },
+          "ranker_type": {
+            "type": "string",
+            "enum": [
+              "deterministic",
+              "embedding"
+            ],
+            "title": "Ranker Type",
+            "description": "Ranking engine to use: 'deterministic' baseline or 'embedding' adapter",
+            "default": "deterministic"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "query_description",
+          "candidates"
+        ],
+        "title": "MediaRankingRequest"
+      },
+      "MediaRankingResponse": {
+        "properties": {
+          "query_description": {
+            "type": "string",
+            "title": "Query Description"
+          },
+          "ranked_candidates": {
+            "items": {
+              "$ref": "#/components/schemas/RankedCandidateItem"
+            },
+            "type": "array",
+            "title": "Ranked Candidates"
+          },
+          "active_ranker": {
+            "type": "string",
+            "title": "Active Ranker"
+          },
+          "model_info": {
+            "type": "string",
+            "title": "Model Info"
+          }
+        },
+        "type": "object",
+        "required": [
+          "query_description",
+          "ranked_candidates",
+          "active_ranker",
+          "model_info"
+        ],
+        "title": "MediaRankingResponse"
+      },
+      "MediaSearchResponse": {
+        "properties": {
+          "query": {
+            "type": "string",
+            "title": "Query"
+          },
+          "provider": {
+            "type": "string",
+            "title": "Provider"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          },
+          "candidates": {
+            "items": {
+              "$ref": "#/components/schemas/CandidateMediaItem"
+            },
+            "type": "array",
+            "title": "Candidates"
+          }
+        },
+        "type": "object",
+        "required": [
+          "query",
+          "provider",
+          "count",
+          "candidates"
+        ],
+        "title": "MediaSearchResponse"
+      },
+      "ProviderItemResponse": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "display_name": {
+            "type": "string",
+            "title": "Display Name"
+          },
+          "is_healthy": {
+            "type": "boolean",
+            "title": "Is Healthy"
+          },
+          "is_remote": {
+            "type": "boolean",
+            "title": "Is Remote"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "display_name",
+          "is_healthy",
+          "is_remote"
+        ],
+        "title": "ProviderItemResponse"
+      },
+      "RankedCandidateItem": {
+        "properties": {
+          "candidate": {
+            "$ref": "#/components/schemas/CandidateMediaItem"
+          },
+          "score": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Score",
+            "description": "Final composite relevance score from 0.0 to 1.0"
+          },
+          "reasons": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Reasons",
+            "description": "Auditable human-readable breakdown of match rationale"
+          },
+          "breakdown": {
+            "$ref": "#/components/schemas/RankedScoreBreakdown"
+          }
+        },
+        "type": "object",
+        "required": [
+          "candidate",
+          "score",
+          "reasons",
+          "breakdown"
+        ],
+        "title": "RankedCandidateItem"
+      },
+      "RankedScoreBreakdown": {
+        "properties": {
+          "text_similarity": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Text Similarity",
+            "description": "Lexical / TF-IDF token overlap score"
+          },
+          "phrase_match": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Phrase Match",
+            "description": "N-gram phrase overlap score"
+          },
+          "tag_overlap": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Tag Overlap",
+            "description": "Thematic tag match score"
+          },
+          "duration_fit": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Duration Fit",
+            "description": "Temporal suitability score"
+          },
+          "aspect_ratio_fit": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Aspect Ratio Fit",
+            "description": "Aspect ratio match factor"
+          },
+          "penalties": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Penalties",
+            "description": "Negative concept / conflict penalty subtracted"
+          }
+        },
+        "type": "object",
+        "required": [
+          "text_similarity",
+          "phrase_match",
+          "tag_overlap",
+          "duration_fit",
+          "aspect_ratio_fit",
+          "penalties"
+        ],
+        "title": "RankedScoreBreakdown"
+      },
+      "RenderJobCreate": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Title",
+            "description": "Human-readable title for the video",
+            "default": "Demo video"
+          },
+          "aspect_ratio": {
+            "type": "string",
+            "enum": [
+              "16:9",
+              "9:16",
+              "1:1"
+            ],
+            "title": "Aspect Ratio",
+            "description": "Target aspect ratio: 16:9 (horizontal), 9:16 (vertical), or 1:1 (square)",
+            "default": "16:9"
+          },
+          "resolution": {
+            "type": "string",
+            "enum": [
+              "1080p",
+              "720p"
+            ],
+            "title": "Resolution",
+            "description": "Render resolution: 1080p (high quality) or 720p",
+            "default": "1080p"
+          },
+          "scenes": {
+            "items": {
+              "$ref": "#/components/schemas/Scene"
+            },
+            "type": "array",
+            "maxItems": 30,
+            "minItems": 1,
+            "title": "Scenes",
+            "description": "List of scenes defining narration, durations, and B-roll visuals"
+          },
+          "audio_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audio Url",
+            "description": "Optional public URL to pre-recorded narration/audio track"
+          },
+          "script": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Script",
+            "description": "Optional full script text"
+          },
+          "auto_rebalance_scenes": {
+            "type": "boolean",
+            "title": "Auto Rebalance Scenes",
+            "description": "If True, rescales scene durations proportionally to fit voiceover audio length",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "scenes"
+        ],
+        "title": "RenderJobCreate"
+      },
+      "Scene": {
+        "properties": {
+          "narration": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Narration",
+            "description": "Script narration text spoken in this scene"
+          },
+          "duration_seconds": {
+            "type": "number",
+            "maximum": 60.0,
+            "minimum": 0.5,
+            "title": "Duration Seconds",
+            "description": "Duration of this scene in seconds (0.5 to 60.0s)"
+          },
+          "visual_description": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Visual Description",
+            "description": "Visual description describing the desired B-roll content"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
+          },
+          "license_name": {
+            "type": "string",
+            "title": "License Name",
+            "default": "UNVERIFIED \u2014 replace with verified licence"
+          },
+          "attribution": {
+            "type": "string",
+            "title": "Attribution",
+            "default": "UNVERIFIED \u2014 attribution required"
+          },
+          "media_metadata": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MediaMetadata"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "narration",
+          "duration_seconds",
+          "visual_description"
+        ],
+        "title": "Scene"
+      },
+      "SegmentationRequest": {
+        "properties": {
+          "script": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 10000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Script",
+            "description": "Raw script text to segment into coherent scenes"
+          },
+          "scenes": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scenes",
+            "description": "Optional pre-existing scene list to validate and normalize"
+          },
+          "aligned_segments": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/AlignedNarrationSegment"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Aligned Segments",
+            "description": "Optional time-aligned narration segments"
+          },
+          "total_duration_seconds": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 300.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Duration Seconds",
+            "description": "Optional total duration (e.g. from voiceover audio) to allocate across scenes"
+          },
+          "min_scene_duration": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 30.0,
+                "minimum": 0.5
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Scene Duration",
+            "description": "Minimum duration in seconds per scene (default 0.5s)"
+          },
+          "max_scene_duration": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 60.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Scene Duration",
+            "description": "Maximum duration in seconds per scene (default 60.0s)"
+          },
+          "words_per_minute": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 300.0,
+                "minimum": 60.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Words Per Minute",
+            "description": "Estimated speech pace in words per minute (default 150 WPM)"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "SegmentationRequest"
+      },
+      "SegmentationResponse": {
+        "properties": {
+          "scenes": {
+            "items": {
+              "$ref": "#/components/schemas/Scene"
+            },
+            "type": "array",
+            "title": "Scenes"
+          },
+          "total_duration_seconds": {
+            "type": "number",
+            "title": "Total Duration Seconds"
+          },
+          "scene_count": {
+            "type": "integer",
+            "title": "Scene Count"
+          },
+          "original_text_preserved": {
+            "type": "boolean",
+            "title": "Original Text Preserved"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scenes",
+          "total_duration_seconds",
+          "scene_count",
+          "original_text_preserved"
+        ],
+        "title": "SegmentationResponse"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Video Engine v1",
+      "description": "API contracts for render job submission, real-time status/progress tracking, cancellation, and artifact distribution."
+    }
+  ]
+}
