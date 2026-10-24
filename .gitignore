@@ -1,3 +1,4 @@
 .env
 .env.*
 !.env.example
+!frontend/dist/sample_video.mp4) 
