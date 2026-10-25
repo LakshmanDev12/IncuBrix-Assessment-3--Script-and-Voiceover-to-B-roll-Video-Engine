@@ -27,6 +27,8 @@
 [🏆 Levels Reached](LEVELS_REACHED.md) •
 [🔌 Integration Standard](INTEGRATION_STANDARD.md) •
 [📊 Measured Numbers](MEASURED_NUMBERS.md) •
+[🛡️ Hard Cases](HARD_CASES.md) •
+[✍️ Declaration](DECLARATION.md) •
 [🤖 AI Use](ai%20use.md)
 
 </div>
