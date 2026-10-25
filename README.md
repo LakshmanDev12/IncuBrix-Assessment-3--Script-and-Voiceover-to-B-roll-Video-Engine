@@ -12,6 +12,7 @@
 [![FFmpeg](https://img.shields.io/badge/FFmpeg-6.0+%20%7C%209.0.1+-007808.svg?style=for-the-badge&logo=ffmpeg&logoColor=white)](https://ffmpeg.org)
 [![Edge-TTS](https://img.shields.io/badge/Edge--TTS-Neural%20Voices-blueviolet.svg?style=for-the-badge&logo=microsoft&logoColor=white)](https://github.com/rany2/edge-tts)
 [![Tests](https://img.shields.io/badge/Tests-155%20Passed-success.svg?style=for-the-badge&logo=pytest&logoColor=white)](tests)
+[![AI Usage](https://img.shields.io/badge/AI%20Assistance-Disclosed-purple.svg?style=for-the-badge&logo=openai&logoColor=white)](ai%20use.md)
 [![License](https://img.shields.io/badge/License-MIT-amber.svg?style=for-the-badge)](LICENSE)
 
 <br/>
@@ -23,7 +24,8 @@
 [🏗️ Architecture](#️-system-architecture) •
 [🔌 REST API Reference](#-rest-api-reference) •
 [⚙️ Configuration](#-configuration--environment-variables) •
-[🧪 Testing & Verification](#-testing--quality-gate)
+[🧪 Testing & Verification](#-testing--quality-gate) •
+[🤖 AI Use](ai%20use.md)
 
 </div>
 
@@ -665,6 +667,9 @@ Contributions, bug reports, and suggestions are welcome!
 5. Open a Pull Request
 
 Distributed under the **MIT License**. See [`LICENSE`](LICENSE) for details.
+
+### 🤖 AI Assistance & Tooling
+Comprehensive disclosure of AI assistance from **Google DeepMind Antigravity**, **OpenAI ChatGPT**, **Anthropic Claude**, and **Google Gemini** is documented in [`ai use.md`](ai%20use.md).
 
 <div align="center">
 <sub>Engineered with precision by <b>Vk-Media / IncuBrix</b>. Powering autonomous video generation.</sub>
