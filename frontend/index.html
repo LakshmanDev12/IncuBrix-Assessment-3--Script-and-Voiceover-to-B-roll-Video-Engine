@@ -291,7 +291,7 @@ dialog[open]::backdrop{animation:fade .3s}
             <div><label class="f" for="src">Footage source</label>
               <select id="src"><option value="pixabay">Pixabay Video</option><option value="ai_generator">CogVideoX-2B (AI generated)</option><option value="local_cc0">Local CC0 library</option></select></div>
             <div><label class="f" for="res">Resolution</label>
-              <select id="res"><option value="1080p">1080p, 30 fps</option><option value="720p">720p, 30 fps</option></select></div>
+              <select id="res"><option value="720p">1080p, 30 fps</option></select></div>
           </div>
           <div class="two">
             <div><label class="f" for="pace">Pacing</label>
@@ -472,7 +472,7 @@ function applyRatio(){
 }
 
 function upd(){
-  $('sfmt').textContent = ratio + ' · ' + $('res').value.split(',')[0];
+  $('sfmt').textContent = ratio + ' · 1080p';
   var t = total();
   $('stot').textContent = scenes.length + ' scenes · ' + fmt(t);
 }
