@@ -22,9 +22,10 @@
 [🐳 Docker Guide](#-docker-containerization-guide) •
 [🖥️ Studio Walkthrough](#-vk-media-studio-split-screen-ui) •
 [🏗️ Architecture](#️-system-architecture) •
-[🔌 REST API Reference](#-rest-api-reference) •
-[⚙️ Configuration](#-configuration--environment-variables) •
-[🧪 Testing & Verification](#-testing--quality-gate) •
+[🔌 REST API](#-rest-api-reference) •
+[📋 Evidence Table](EVIDENCE_TABLE.md) •
+[🏆 Levels Reached](LEVELS_REACHED.md) •
+[🔌 Integration Standard](INTEGRATION_STANDARD.md) •
 [🤖 AI Use](ai%20use.md)
 
 </div>
