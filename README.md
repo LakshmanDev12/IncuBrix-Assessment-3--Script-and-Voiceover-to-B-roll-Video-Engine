@@ -20,6 +20,8 @@
 [✨ Features](#-key-features) •
 [🚀 How to Run](#-how-to-run-the-project) •
 [🐳 Docker Guide](#-docker-containerization-guide) •
+[🎥 Unedited Walkthrough](https://drive.google.com/file/d/1DMZmS_t_iJfAsIb9ll3Qhc8AiPU1lksB/view?usp=sharing) •
+[✨ Edited Showcase](https://drive.google.com/file/d/1E7Qa8Tcy89PY3jZ7xDU9TJP4RTOZsFnl/view?usp=sharing) •
 [🖥️ Studio Walkthrough](#-vk-media-studio-split-screen-ui) •
 [🏗️ Architecture](#️-system-architecture) •
 [🔌 REST API](#-rest-api-reference) •
@@ -405,6 +407,12 @@ docker network inspect vk-broll-net
 ---
 
 ## 🖥️ Vk-Media Studio (Split-Screen UI)
+
+> [!TIP]
+> 🎥 **Video Demonstrations**:
+> - **Unedited Walkthrough (< 8 mins)**: [Watch on Google Drive](https://drive.google.com/file/d/1DMZmS_t_iJfAsIb9ll3Qhc8AiPU1lksB/view?usp=sharing)
+> - **Edited Video Showcase**: [Watch on Google Drive](https://drive.google.com/file/d/1E7Qa8Tcy89PY3jZ7xDU9TJP4RTOZsFnl/view?usp=sharing)
+> - **Live Interactive Studio**: [https://incubrix-video-broll-engine.vercel.app/](https://incubrix-video-broll-engine.vercel.app/)
 
 The web studio is optimized for rapid, distraction-free video creation:
 

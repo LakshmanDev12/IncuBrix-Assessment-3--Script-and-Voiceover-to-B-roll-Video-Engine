@@ -133,3 +133,14 @@ video-broll-engine\tests\test_validation.py ...............              [100%]
 5. **Relevance & Sourcing (`test_relevance.py`, `test_providers.py`, `test_media_validation.py`):** Scoring breakdown, duplicate avoidance, and pre-render ISO-BMFF validation.
 6. **Production Rendering (`test_production_rendering.py`):** Multi-aspect ratio conformance (16:9, 9:16, 1:1), 4 audio alignment policies, looping safeguard, and FFprobe quality gate.
 7. **Hardening & Security (`test_security.py`, `test_hardening.py`):** SSRF IP blocklists, Windows device names (`CON`, `PRN`), NTFS Alternate Data Streams, correlation IDs, secret masking, and liveness/readiness probes.
+
+---
+
+## 5. Verification Artifacts & Video Demonstrations
+
+- **Unedited Walkthrough Video (< 8 min)**: [Watch on Google Drive](https://drive.google.com/file/d/1DMZmS_t_iJfAsIb9ll3Qhc8AiPU1lksB/view?usp=sharing)
+- **Edited Showcase Video**: [Watch on Google Drive](https://drive.google.com/file/d/1E7Qa8Tcy89PY3jZ7xDU9TJP4RTOZsFnl/view?usp=sharing)
+- **Live Interactive Web Studio**: [https://incubrix-video-broll-engine.vercel.app/](https://incubrix-video-broll-engine.vercel.app/)
+- **Private Repository**: [IncuBrix-Assessment-3--Script-and-Voiceover-to-B-roll-Video-Engine](https://github.com/LakshmanDev12/IncuBrix-Assessment-3--Script-and-Voiceover-to-B-roll-Video-Engine)
+- **Submission Excel Workbook**: [`Assessment3_Lakshmandev_Vk.xlsx`](Assessment3_Lakshmandev_Vk.xlsx)
+
