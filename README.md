@@ -8,6 +8,7 @@
 
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110+-009688.svg?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 [![Python](https://img.shields.io/badge/Python-3.12%20%7C%203.13-3776AB.svg?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
+[![Live Demo](https://img.shields.io/badge/🚀%20Live%20Web%20Studio-Vercel%20Cloud-00C7B7.svg?style=for-the-badge&logo=vercel&logoColor=white)](https://incubrix-video-broll-engine.vercel.app/)
 [![Docker](https://img.shields.io/badge/Docker-Compose%20v2-2496ED.svg?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
 [![FFmpeg](https://img.shields.io/badge/FFmpeg-6.0+%20%7C%209.0.1+-007808.svg?style=for-the-badge&logo=ffmpeg&logoColor=white)](https://ffmpeg.org)
 [![Edge-TTS](https://img.shields.io/badge/Edge--TTS-Neural%20Voices-blueviolet.svg?style=for-the-badge&logo=microsoft&logoColor=white)](https://github.com/rany2/edge-tts)
@@ -17,11 +18,12 @@
 
 <br/>
 
+[🌐 Live Web Studio](https://incubrix-video-broll-engine.vercel.app/) •
+[🎥 Unedited Walkthrough](https://drive.google.com/file/d/1DMZmS_t_iJfAsIb9ll3Qhc8AiPU1lksB/view?usp=sharing) •
+[✨ Edited Showcase](https://drive.google.com/file/d/1E7Qa8Tcy89PY3jZ7xDU9TJP4RTOZsFnl/view?usp=sharing) •
 [✨ Features](#-key-features) •
 [🚀 How to Run](#-how-to-run-the-project) •
 [🐳 Docker Guide](#-docker-containerization-guide) •
-[🎥 Unedited Walkthrough](https://drive.google.com/file/d/1DMZmS_t_iJfAsIb9ll3Qhc8AiPU1lksB/view?usp=sharing) •
-[✨ Edited Showcase](https://drive.google.com/file/d/1E7Qa8Tcy89PY3jZ7xDU9TJP4RTOZsFnl/view?usp=sharing) •
 [🖥️ Studio Walkthrough](#-vk-media-studio-split-screen-ui) •
 [🏗️ Architecture](#️-system-architecture) •
 [🔌 REST API](#-rest-api-reference) •
@@ -34,6 +36,19 @@
 [🤖 AI Use](ai%20use.md)
 
 </div>
+
+---
+
+> [!IMPORTANT]
+> ### 🌐 **LIVE INTERACTIVE WEB STUDIO DEPLOYMENT**
+> **Experience the complete video generation engine live in your browser (no local setup required):**  
+> 
+> ### 👉 **[https://incubrix-video-broll-engine.vercel.app/](https://incubrix-video-broll-engine.vercel.app/)** 👈
+> 
+> * **⚡ Instant Split-Screen Studio:** Interactive left-pane script/scene editor with automatic scene splitting on action; right-pane synchronized video player with live subtitle overlay.
+> * **🎙️ Neural TTS & Custom Audio:** Microsoft Edge-TTS multilingual speech generation (English, Hindi, Tamil) or custom audio voiceover upload.
+> * **📐 Conforming Engine:** 16:9 Landscape, 9:16 Shorts/Reels, and 1:1 Square aspect ratios.
+> * **📦 Dynamic Deliverables:** Download broadcast-ready MP4 videos named after your project title.
 
 ---
 
@@ -96,14 +111,24 @@ Whether driven via its modern **Split-Screen Web Studio** or integrated headless
 
 | Service / Interface | URL | Description |
 | :--- | :--- | :--- |
-| 🖥️ **Vk-Media Web Studio** | **[http://localhost:8000](http://localhost:8000)** | Split-screen studio: prompt editor, auto scene splitter, live video player & MP4 downloader |
+| 🌐 **Live Web Studio (Hosted)** | **[https://incubrix-video-broll-engine.vercel.app/](https://incubrix-video-broll-engine.vercel.app/)** | **Instant Live Deployment** — Full split-screen studio, zero local installation required |
+| 🖥️ **Vk-Media Web Studio (Local)** | **[http://localhost:8000](http://localhost:8000)** | Split-screen studio: prompt editor, auto scene splitter, live video player & MP4 downloader |
 | 🔌 **FastAPI Backend Engine** | **[http://localhost:8002](http://localhost:8002)** | Asynchronous video processing API and SQLite queue worker |
 | 📚 **Interactive Swagger API Docs**| **[http://localhost:8002/docs](http://localhost:8002/docs)** | Interactive OpenAPI endpoint explorer and testing console |
 | 🩺 **System Health Probe** | **[http://localhost:8002/health/ready](http://localhost:8002/health/ready)** | Disk space verification and database readiness check |
 
 ---
 
-### Method 1: 🐳 Run with Docker (Recommended — Fastest & Easiest)
+### Method 0: 🌐 Instant Access via Live Web Studio (No Install)
+
+Open **[https://incubrix-video-broll-engine.vercel.app/](https://incubrix-video-broll-engine.vercel.app/)** in any modern web browser.
+- Type or paste your script and enter a project title.
+- Choose your preferred neural voice (English, Hindi, Tamil) and aspect ratio (16:9, 9:16, 1:1).
+- Click **⚡ Generate Video** to create and preview the synchronized 1080p MP4 deliverable directly from the cloud.
+
+---
+
+### Method 1: 🐳 Run with Docker (Fastest & Easiest for Local Development)
 
 Runs both the Frontend Studio and FastAPI Backend in self-contained Docker containers with FFmpeg and Edge-TTS pre-installed.
 
