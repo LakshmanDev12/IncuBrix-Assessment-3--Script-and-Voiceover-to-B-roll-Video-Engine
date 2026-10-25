@@ -17,7 +17,7 @@
 <br/>
 
 [✨ Features](#-key-features) •
-[⚡ Quick Start](#-quick-start) •
+[🚀 How to Run](#-how-to-run-the-project) •
 [🖥️ Studio Walkthrough](#-vk-media-studio-split-screen-ui) •
 [🏗️ Architecture](#️-system-architecture) •
 [🔌 REST API Reference](#-rest-api-reference) •
@@ -81,87 +81,140 @@ Whether driven via its modern **Split-Screen Web Studio** or integrated headless
 
 ---
 
-## ⚡ Quick Start
+## 🚀 How to Run the Project
 
-### Option A: Docker Compose (Recommended)
+### 📌 Quick Access Table
 
-Get both the **FastAPI Backend** and the **Vk-Media Web Studio** up in under 60 seconds:
+| Service / Interface | URL | Description |
+| :--- | :--- | :--- |
+| 🖥️ **Vk-Media Web Studio** | **[http://localhost:8000](http://localhost:8000)** | Split-screen studio: prompt editor, auto scene splitter, live video player & MP4 downloader |
+| 🔌 **FastAPI Backend Engine** | **[http://localhost:8002](http://localhost:8002)** | Asynchronous video processing API and SQLite queue worker |
+| 📚 **Interactive Swagger API Docs**| **[http://localhost:8002/docs](http://localhost:8002/docs)** | Interactive OpenAPI endpoint explorer and testing console |
+| 🩺 **System Health Probe** | **[http://localhost:8002/health/ready](http://localhost:8002/health/ready)** | Disk space verification and database readiness check |
 
+---
+
+### Method 1: 🐳 Run with Docker (Recommended — Fastest & Easiest)
+
+Runs both the Frontend Studio and FastAPI Backend in self-contained Docker containers with FFmpeg and Edge-TTS pre-installed.
+
+#### 1. Clone & Start Stack
 ```bash
-# 1. Clone repository
+# Clone the repository
 git clone https://github.com/LakshmanDev12/incubrix-video-broll-engine.git
 cd incubrix-video-broll-engine
 
-# 2. Launch containerized stack
-docker compose up -d
-
-# 3. View running containers
-docker compose ps
+# Start both services in detached mode
+docker compose up -d --build
 ```
 
-- 🌐 **Web Studio UI:** [http://localhost:8000](http://localhost:8000)
-- 🔌 **API Backend:** [http://localhost:8002](http://localhost:8002)
-- 📚 **Interactive OpenAPI Docs:** [http://localhost:8002/docs](http://localhost:8002/docs)
-
-To view backend logs or shut down:
+#### 2. Confirm Status
 ```bash
+docker compose ps
+```
+*You should see `vk-broll-frontend` listening on port `8000` and `vk-broll-backend` on port `8002`.*
+
+#### 3. View Logs & Stop
+```bash
+# View backend video generation logs in real time
 docker compose logs -f backend
+
+# Stop all containers when done
 docker compose down
 ```
 
 ---
 
-### Option B: Native Host Environment (Windows / Linux / macOS)
+### Method 2: ⚡ One-Click Startup (Windows)
 
-#### Prerequisites
-- **Python:** `3.12+` or `3.13` (64-bit)
-- **FFmpeg & FFprobe:** `6.0+` on system `PATH`
-  - *Windows:* `winget install Gyan.FFmpeg`
-  - *Debian/Ubuntu:* `sudo apt update && sudo apt install -y ffmpeg`
-  - *macOS:* `brew install ffmpeg`
-
-#### 1. Setup & Dependencies
-```bash
-# Create and activate virtual environment
-python -m venv venv
-
-# Windows (PowerShell)
-.\venv\Scripts\Activate.ps1
-# Linux / macOS
-source venv/bin/activate
-
-# Install required packages
-pip install -r requirements.txt
-
-# Copy environment variables
-cp .env.example .env
-```
-
-#### 2. Run Servers
-You can use the provided convenience launchers or start manually:
+If you already have Python and Node installed on your Windows machine:
 
 ```powershell
-# Windows Convenience Script (launches both Backend :8002 and Frontend :8000)
+# Double-click or execute in PowerShell from the project root:
 .\start_all.bat
 # or
 .\start_all.ps1
 ```
-
-Or start the backend manually:
-```bash
-uvicorn app.main:app --host 0.0.0.0 --port 8002 --reload
-```
+*This launches two terminal windows in parallel: one starting the FastAPI backend on port `8002`, and one launching the Vite studio on port `8000`.*
 
 ---
 
-### Option C: Run Headless Automated Demo
+### Method 3: 💻 Run Locally without Docker (Windows / Linux / macOS)
 
-Verify your local FFmpeg setup and end-to-end rendering without opening a browser:
+#### Prerequisites
+- **Python:** `3.12+` or `3.13` (64-bit)
+- **Node.js:** `18+` & `npm`
+- **FFmpeg & FFprobe:** `6.0+` accessible on system `PATH`
+  - *Windows:* `winget install Gyan.FFmpeg`
+  - *Debian / Ubuntu:* `sudo apt update && sudo apt install -y ffmpeg`
+  - *macOS:* `brew install ffmpeg`
+
+#### Step 1: Start the Backend (Terminal 1)
+```bash
+# Navigate to workspace
+cd incubrix-video-broll-engine
+
+# Create and activate virtual environment
+python -m venv venv
+
+# Windows (PowerShell):
+.\venv\Scripts\Activate.ps1
+# Linux / macOS:
+source venv/bin/activate
+
+# Install backend dependencies
+pip install -r requirements.txt
+
+# Copy environment defaults
+cp .env.example .env
+
+# Start FastAPI server on port 8002
+uvicorn app.main:app --host 0.0.0.0 --port 8002 --reload
+```
+*Backend is now running at `http://localhost:8002`.*
+
+#### Step 2: Start the Web Studio UI (Terminal 2)
+```bash
+# Navigate to frontend folder
+cd frontend
+
+# Install UI dependencies
+npm install
+
+# Start Vite development server
+npm run dev
+```
+*Web Studio is now live at `http://localhost:8000`.*
+
+---
+
+### Method 4: 🧪 Run Headless Demo Script (No Browser Needed)
+
+To execute a test run with a 3-scene sample story, verify local FFmpeg encoding, and validate artifact hashes:
 
 ```bash
 python demo_run.py
 ```
-*This script submits a 3-scene sample story, monitors queue progression, downloads final deliverables into `output/`, and runs stream verification using FFprobe.*
+*This script submits a job to the background queue, logs real-time milestone progress (15% $\to$ 35% $\to$ 55% $\to$ 75% $\to$ 90% $\to$ 100%), performs FFprobe stream verification, and downloads `video.mp4`, `captions.srt`, and `manifest.json` into the `output/` directory.*
+
+---
+
+### 🎬 How to Generate a Video in the Web Studio
+
+Once your servers are running, open **[http://localhost:8000](http://localhost:8000)** in your browser:
+
+1. **Enter Project Title**: Give your video a title (e.g. `Deep Ocean Frontier`).
+2. **Type or Paste Narration**: Enter your narrative script in the **Narration Script** box.
+3. **Choose Voice & Settings**:
+   - **Voice**: Select an Edge-TTS voice (e.g. `Christopher Neural` or `Jenny Neural`).
+   - **Aspect Ratio**: Choose `16:9 Landscape` (YouTube), `9:16 Shorts/Reels` (TikTok/Mobile), or `1:1 Square`.
+4. **Click "⚡ Generate video" or "▶ Preview"**:
+   - The engine automatically splits your script into paced scenes with clause preservation.
+   - The scene cards appear on the left with duration tags and visual descriptions.
+5. **Watch Real-Time Progress & Download**:
+   - Track progress from 0% to 100% on the status bar.
+   - Preview the finished video with synchronized subtitles in the right-side player.
+   - Click **"⬇ Download Video: <Project_Title>.mp4"** to save your deliverable.
 
 ---
 
