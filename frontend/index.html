@@ -389,8 +389,9 @@ dialog[open]::backdrop{animation:fade .3s}
 </dialog>
 
 <script>
+const API_BASE = 'https://incubrix-video-broll-engine.onrender.com';
 var COLORS = ['#74747E','#61616B','#52525B','#44444C','#38383F'];
-var SAMPLE_VIDEO_URL = '/output/sample/video.mp4';
+var SAMPLE_VIDEO_URL = API_BASE + '/output/sample/video.mp4';
 var SAMPLE_VIDEO_FALLBACK = '/sample_video.mp4';
 var SAMPLE_SCENES = [
   {t:4.5, n:'Turquoise waves crash onto rocky cliffs at sunset.', v:'turquoise waves crashing rocky cliffs ocean sunset'},
@@ -866,9 +867,9 @@ async function triggerVideoGeneration(options){
       fd.append('auto_rebalance_scenes', isAlign ? 'true' : 'false');
       fd.append('strict_duration_match', isAlign ? 'true' : 'false');
       fd.append('strict_match', isAlign ? 'true' : 'false');
-      resp = await fetch('/v1/jobs/multipart', { method: 'POST', body: fd });
+      resp = await fetch(`${API_BASE}/v1/jobs/multipart`, { method: 'POST', body: fd });
     } else {
-      resp = await fetch('/v1/jobs', {
+      resp = await fetch(`${API_BASE}/v1/jobs`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -924,7 +925,7 @@ function pollJob(jobId, isUpdatePreview){
   clearTimeout(pollTimer);
   pollTimer = setTimeout(async function(){
     try {
-      var r = await fetch('/v1/jobs/' + jobId);
+      var r = await fetch(`${API_BASE}/v1/jobs/${jobId}`);
       if(!r.ok) return;
       var data = await r.json();
 
@@ -941,7 +942,7 @@ function pollJob(jobId, isUpdatePreview){
         isSampleLooping = false;
         $('pb').style.width = '100%';
         
-        var vidUrl = '/output/' + jobId + '/video.mp4?t=' + Date.now();
+        var vidUrl = `${API_BASE}/output/${jobId}/video.mp4?t=${Date.now()}`;
         // Do not autoplay in modal dialog to prevent duplicate audio echoing with preview player
         $('done-screen').innerHTML = '<video src="' + vidUrl + '" controls playsinline preload="metadata" style="width:100%;height:100%;border-radius:10px;object-fit:contain;background:#000"></video>';
         var dv = $('done-screen').querySelector('video');
@@ -954,12 +955,12 @@ function pollJob(jobId, isUpdatePreview){
         var videoFileName = safeTitle + '.mp4';
         syncVideoFilename(videoFileName);
         
-        var dlNamedUrl = '/v1/jobs/' + jobId + '/download';
+        var dlNamedUrl = `${API_BASE}/v1/jobs/${jobId}/download`;
         $('dl-mp4').href = dlNamedUrl;
         $('dl-mp4').setAttribute('download', videoFileName);
         $('dl-mp4').textContent = 'Download ' + videoFileName;
-        $('dl-srt').href = '/output/' + jobId + '/captions.srt';
-        $('dl-json').href = '/output/' + jobId + '/timeline.json';
+        $('dl-srt').href = `${API_BASE}/output/${jobId}/captions.srt`;
+        $('dl-json').href = `${API_BASE}/output/${jobId}/timeline.json`;
         
         var dlTop = $('btn-dl-video');
         if(dlTop){
@@ -1008,7 +1009,7 @@ $('close').onclick = function(){
 
 async function loadHistory(){
   try {
-    var r = await fetch('/v1/jobs?limit=30');
+    var r = await fetch(`${API_BASE}/v1/jobs?limit=30`);
     if(!r.ok) return;
     var res = await r.json();
     var list = res.jobs || [];
@@ -1038,22 +1039,22 @@ window.openArtifact = function(jobId, title){
   $('done').classList.remove('hide');
   $('dt').textContent = title || 'Completed Render';
   stop(false);
-  var vidUrl = '/output/' + jobId + '/video.mp4';
+  var vidUrl = `${API_BASE}/output/${jobId}/video.mp4`;
   $('done-screen').innerHTML = '<video src="' + vidUrl + '" controls playsinline preload="metadata" style="width:100%;height:100%;border-radius:10px;object-fit:contain;background:#000"></video>';
   var dv = $('done-screen').querySelector('video');
   if(dv){
     dv.addEventListener('play', function(){ if(playing) stop(false); });
   }
   $('dl-mp4').href = vidUrl;
-  $('dl-srt').href = '/output/' + jobId + '/captions.srt';
-  $('dl-json').href = '/output/' + jobId + '/timeline.json';
+  $('dl-srt').href = `${API_BASE}/output/${jobId}/captions.srt`;
+  $('dl-json').href = `${API_BASE}/output/${jobId}/timeline.json`;
   $('dlg').showModal();
 };
 
 async function loadHealth(){
   try {
-    var r = await fetch('/health/ready').catch(function(){ return null; });
-    if(!r || !r.ok) r = await fetch('/health').catch(function(){ return null; });
+    var r = await fetch(`${API_BASE}/health/ready`).catch(function(){ return null; });
+    if(!r || !r.ok) r = await fetch(`${API_BASE}/health`).catch(function(){ return null; });
     var d = (r && r.ok) ? await r.json().catch(function(){ return { status: 'unknown' }; }) : { status: 'unknown' };
     
     var setDot = function(elId, isHealthy, text){
@@ -1068,7 +1069,7 @@ async function loadHealth(){
     var ffmpegOk = !!(d.checks?.media_binaries?.ffmpeg_available ?? d.checks?.ffmpeg_installed);
     setDot('h-ffmpeg', ffmpegOk, 'FFmpeg · ' + (ffmpegOk ? 'ready' : 'missing'));
 
-    var pResp = await fetch('/v1/providers').catch(function(){ return null; });
+    var pResp = await fetch(`${API_BASE}/v1/providers`).catch(function(){ return null; });
     if(pResp && pResp.ok){
       var pList = await pResp.json();
       var pix = pList.find(function(p){ return p.name === 'pixabay'; });
@@ -1092,7 +1093,12 @@ async function doSearch(q){
   }
   cont.innerHTML = '<div style="padding:20px;text-align:center;color:var(--muted)">Searching footage for "' + esc(q) + '"...</div>';
   try {
-    var r = await fetch('/v1/media/search?query=' + encodeURIComponent(q) + '&limit=12');
+    var params = new URLSearchParams({
+      query: q,
+      provider: 'pixabay',
+      count: '12'
+    });
+    var r = await fetch(`${API_BASE}/v1/media/search?${params.toString()}`);
     if(!r.ok) throw new Error('Search failed (' + r.status + ')');
     var d = await r.json();
     var list = d.candidates || [];
