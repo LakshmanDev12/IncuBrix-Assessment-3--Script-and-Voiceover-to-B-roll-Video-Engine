@@ -2,6 +2,7 @@
 
 > **Assessment Level Reached:** **Outstanding** (40 / 40 Marks Claimed)  
 > **Rule:** *A level counts only if every item in it is Yes, and only if the level before it counts. Core 15 marks, Advanced 15, Outstanding 10.*  
+> **🎬 Sample Video Generated (15:00 min):** [Watch on Google Drive](https://drive.google.com/file/d/1XBJ_qyGlQudaBiA4FhneKXxE808tqsb2/view?usp=sharing)  
 > **🎥 Unedited Walkthrough Video (< 8 min):** [Watch on Google Drive](https://drive.google.com/file/d/1DMZmS_t_iJfAsIb9ll3Qhc8AiPU1lksB/view?usp=sharing)  
 > **✨ Edited Showcase Video:** [Watch on Google Drive](https://drive.google.com/file/d/1E7Qa8Tcy89PY3jZ7xDU9TJP4RTOZsFnl/view?usp=sharing)
 

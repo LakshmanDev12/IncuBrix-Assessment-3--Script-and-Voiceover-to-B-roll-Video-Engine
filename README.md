@@ -9,6 +9,7 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110+-009688.svg?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 [![Python](https://img.shields.io/badge/Python-3.12%20%7C%203.13-3776AB.svg?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
 [![Live Demo](https://img.shields.io/badge/🚀%20Live%20Web%20Studio-Vercel%20Cloud-00C7B7.svg?style=for-the-badge&logo=vercel&logoColor=white)](https://incubrix-video-broll-engine.vercel.app/)
+[![Sample Video](https://img.shields.io/badge/🎬%20Sample%20Video-15:00%20Min%20Render-E11D48.svg?style=for-the-badge&logo=google-drive&logoColor=white)](https://drive.google.com/file/d/1XBJ_qyGlQudaBiA4FhneKXxE808tqsb2/view?usp=sharing)
 [![Docker](https://img.shields.io/badge/Docker-Compose%20v2-2496ED.svg?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
 [![FFmpeg](https://img.shields.io/badge/FFmpeg-6.0+%20%7C%209.0.1+-007808.svg?style=for-the-badge&logo=ffmpeg&logoColor=white)](https://ffmpeg.org)
 [![Edge-TTS](https://img.shields.io/badge/Edge--TTS-Neural%20Voices-blueviolet.svg?style=for-the-badge&logo=microsoft&logoColor=white)](https://github.com/rany2/edge-tts)
@@ -19,6 +20,7 @@
 <br/>
 
 [🌐 Live Web Studio](https://incubrix-video-broll-engine.vercel.app/) •
+[🎬 15:00 Min Sample Video](https://drive.google.com/file/d/1XBJ_qyGlQudaBiA4FhneKXxE808tqsb2/view?usp=sharing) •
 [🎥 Unedited Walkthrough](https://drive.google.com/file/d/1DMZmS_t_iJfAsIb9ll3Qhc8AiPU1lksB/view?usp=sharing) •
 [✨ Edited Showcase](https://drive.google.com/file/d/1E7Qa8Tcy89PY3jZ7xDU9TJP4RTOZsFnl/view?usp=sharing) •
 [✨ Features](#-key-features) •
@@ -40,15 +42,18 @@
 ---
 
 > [!IMPORTANT]
-> ### 🌐 **LIVE INTERACTIVE WEB STUDIO DEPLOYMENT**
+> ### 🌐 **LIVE INTERACTIVE WEB STUDIO DEPLOYMENT & 15-MIN SAMPLE**
 > **Experience the complete video generation engine live in your browser (no local setup required):**  
 > 
 > ### 👉 **[https://incubrix-video-broll-engine.vercel.app/](https://incubrix-video-broll-engine.vercel.app/)** 👈
 > 
-> * **⚡ Instant Split-Screen Studio:** Interactive left-pane script/scene editor with automatic scene splitting on action; right-pane synchronized video player with live subtitle overlay.
-> * **🎙️ Neural TTS & Custom Audio:** Microsoft Edge-TTS multilingual speech generation (English, Hindi, Tamil) or custom audio voiceover upload.
-> * **📐 Conforming Engine:** 16:9 Landscape, 9:16 Shorts/Reels, and 1:1 Square aspect ratios.
-> * **📦 Dynamic Deliverables:** Download broadcast-ready MP4 videos named after your project title.
+> - 🎬 **Featured Full-Length Render Output (Length: 15:00 Minutes)**:  
+>   👉 **[Watch 15-Minute Generated Video on Google Drive](https://drive.google.com/file/d/1XBJ_qyGlQudaBiA4FhneKXxE808tqsb2/view?usp=sharing)** 👈  
+>   *Complete 15-minute end-to-end generated video demonstrating long-form narration pacing, continuous semantic B-roll coverage across dozens of scenes, frame-accurate synchronization, and zero audio drift.*
+> - ⚡ **Instant Split-Screen Studio:** Interactive left-pane script/scene editor with automatic scene splitting on action; right-pane synchronized video player with live subtitle overlay.
+> - 🎙️ **Neural TTS & Custom Audio:** Microsoft Edge-TTS multilingual speech generation (English, Hindi, Tamil) or custom audio voiceover upload.
+> - 📐 **Conforming Engine:** 16:9 Landscape, 9:16 Shorts/Reels, and 1:1 Square aspect ratios.
+> - 📦 **Dynamic Deliverables:** Download broadcast-ready MP4 videos named after your project title.
 
 ---
 
@@ -112,6 +117,7 @@ Whether driven via its modern **Split-Screen Web Studio** or integrated headless
 | Service / Interface | URL | Description |
 | :--- | :--- | :--- |
 | 🌐 **Live Web Studio (Hosted)** | **[https://incubrix-video-broll-engine.vercel.app/](https://incubrix-video-broll-engine.vercel.app/)** | **Instant Live Deployment** — Full split-screen studio, zero local installation required |
+| 🎬 **Sample Video (15:00 Min)** | **[Watch on Google Drive](https://drive.google.com/file/d/1XBJ_qyGlQudaBiA4FhneKXxE808tqsb2/view?usp=sharing)** | Full-length 15:00 minute end-to-end generated video output (stress-test deliverable) |
 | 🖥️ **Vk-Media Web Studio (Local)** | **[http://localhost:8000](http://localhost:8000)** | Split-screen studio: prompt editor, auto scene splitter, live video player & MP4 downloader |
 | 🔌 **FastAPI Backend Engine** | **[http://localhost:8002](http://localhost:8002)** | Asynchronous video processing API and SQLite queue worker |
 | 📚 **Interactive Swagger API Docs**| **[http://localhost:8002/docs](http://localhost:8002/docs)** | Interactive OpenAPI endpoint explorer and testing console |
@@ -434,10 +440,11 @@ docker network inspect vk-broll-net
 ## 🖥️ Vk-Media Studio (Split-Screen UI)
 
 > [!TIP]
-> 🎥 **Video Demonstrations**:
-> - **Unedited Walkthrough (< 8 mins)**: [Watch on Google Drive](https://drive.google.com/file/d/1DMZmS_t_iJfAsIb9ll3Qhc8AiPU1lksB/view?usp=sharing)
-> - **Edited Video Showcase**: [Watch on Google Drive](https://drive.google.com/file/d/1E7Qa8Tcy89PY3jZ7xDU9TJP4RTOZsFnl/view?usp=sharing)
-> - **Live Interactive Studio**: [https://incubrix-video-broll-engine.vercel.app/](https://incubrix-video-broll-engine.vercel.app/)
+> 🎥 **Video Demonstrations & Sample Deliverables**:
+> - 🎬 **Sample Video Generated (Length: 15:00 Minutes)**: [Watch on Google Drive](https://drive.google.com/file/d/1XBJ_qyGlQudaBiA4FhneKXxE808tqsb2/view?usp=sharing)
+> - 🎥 **Unedited Walkthrough (< 8 mins)**: [Watch on Google Drive](https://drive.google.com/file/d/1DMZmS_t_iJfAsIb9ll3Qhc8AiPU1lksB/view?usp=sharing)
+> - ✨ **Edited Video Showcase**: [Watch on Google Drive](https://drive.google.com/file/d/1E7Qa8Tcy89PY3jZ7xDU9TJP4RTOZsFnl/view?usp=sharing)
+> - 🌐 **Live Interactive Web Studio**: [https://incubrix-video-broll-engine.vercel.app/](https://incubrix-video-broll-engine.vercel.app/)
 
 The web studio is optimized for rapid, distraction-free video creation:
 

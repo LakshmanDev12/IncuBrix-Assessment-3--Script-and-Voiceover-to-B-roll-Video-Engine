@@ -138,6 +138,7 @@ video-broll-engine\tests\test_validation.py ...............              [100%]
 
 ## 5. Verification Artifacts & Video Demonstrations
 
+- **Sample Video Generated (Length: 15:00 min)**: [Watch 15-Minute Sample Video on Google Drive](https://drive.google.com/file/d/1XBJ_qyGlQudaBiA4FhneKXxE808tqsb2/view?usp=sharing)
 - **Unedited Walkthrough Video (< 8 min)**: [Watch on Google Drive](https://drive.google.com/file/d/1DMZmS_t_iJfAsIb9ll3Qhc8AiPU1lksB/view?usp=sharing)
 - **Edited Showcase Video**: [Watch on Google Drive](https://drive.google.com/file/d/1E7Qa8Tcy89PY3jZ7xDU9TJP4RTOZsFnl/view?usp=sharing)
 - **Live Interactive Web Studio**: [https://incubrix-video-broll-engine.vercel.app/](https://incubrix-video-broll-engine.vercel.app/)

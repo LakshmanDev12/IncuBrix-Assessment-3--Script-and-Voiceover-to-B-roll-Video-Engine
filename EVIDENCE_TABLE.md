@@ -1,8 +1,9 @@
 # 📋 Assessment Evidence Table (Plain English & Simple Words)
 
 > **Project:** Vk-Media IncuBrix Video B-Roll Engine  
-> **Status:** All 8 Must-Have Requirements Verified (100% Passing)
-> **🎥 Unedited Walkthrough Video (< 8 min):** [Watch on Google Drive](https://drive.google.com/file/d/1DMZmS_t_iJfAsIb9ll3Qhc8AiPU1lksB/view?usp=sharing)
+> **Status:** All 8 Must-Have Requirements Verified (100% Passing)  
+> **🎬 Sample Video Generated (15:00 min):** [Watch on Google Drive](https://drive.google.com/file/d/1XBJ_qyGlQudaBiA4FhneKXxE808tqsb2/view?usp=sharing)  
+> **🎥 Unedited Walkthrough Video (< 8 min):** [Watch on Google Drive](https://drive.google.com/file/d/1DMZmS_t_iJfAsIb9ll3Qhc8AiPU1lksB/view?usp=sharing)  
 > **✨ Edited Showcase Video:** [Watch on Google Drive](https://drive.google.com/file/d/1E7Qa8Tcy89PY3jZ7xDU9TJP4RTOZsFnl/view?usp=sharing)
 
 ---
