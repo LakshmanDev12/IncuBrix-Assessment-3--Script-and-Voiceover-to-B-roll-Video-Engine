@@ -1,7 +1,22 @@
+# Environment & Secrets (NEVER COMMITTED)
 .env
 .env.*
 !.env.example
+
+# Python cache & virtual environments
 __pycache__/
-*.pyc
-output/
+*.py[cod]
+*$py.class
+.pytest_cache/
 .venv/
+venv/
+env/
+
+# Outputs, databases & temporary files
+output/
+*.db
+*.db-wal
+*.db-shm
+
+# Dependencies
+node_modules/
