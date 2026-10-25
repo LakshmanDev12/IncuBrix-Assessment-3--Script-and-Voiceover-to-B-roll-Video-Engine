@@ -89,13 +89,11 @@ class Scene(BaseModel):
     def sanitize_duration(cls, v: Any) -> float:
         try:
             val = float(v)
-            if val < settings.MIN_SCENE_DURATION_SECONDS:
-                return settings.MIN_SCENE_DURATION_SECONDS
-            if val > settings.MAX_SCENE_DURATION_SECONDS:
-                return settings.MAX_SCENE_DURATION_SECONDS
+            if val < settings.MIN_SCENE_DURATION_SECONDS or val > settings.MAX_SCENE_DURATION_SECONDS:
+                raise ValueError(f"Scene duration must be between {settings.MIN_SCENE_DURATION_SECONDS} and {settings.MAX_SCENE_DURATION_SECONDS} seconds.")
             return val
-        except (ValueError, TypeError):
-            return 3.0
+        except (ValueError, TypeError) as e:
+            raise ValueError(str(e))
 
     @field_validator("source_url")
     @classmethod

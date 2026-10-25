@@ -207,8 +207,8 @@ async def create_job_multipart(
     audio_url: Optional[str] = Form(default=None),
     script: Optional[str] = Form(default=None),
     auto_rebalance_scenes: bool = Form(default=False),
-    strict_match: bool = Form(default=True),
-    strict_duration_match: Optional[bool] = Form(default=None),
+    strict_match: Optional[str] = Form(default=None),
+    strict_duration_match: Optional[str] = Form(default=None),
     audio_file: Optional[UploadFile] = File(default=None),
     idempotency_key: Optional[str] = Header(None, alias="Idempotency-Key")
 ):
@@ -306,7 +306,12 @@ async def create_job_multipart(
                 "bit_rate": inspection.bit_rate,
                 "size_bytes": inspection.file_size_bytes
             }
-            use_strict = strict_duration_match if strict_duration_match is not None else strict_match
+            if strict_duration_match is not None:
+                use_strict = str(strict_duration_match).lower() not in ("false", "0", "no")
+            elif strict_match is not None:
+                use_strict = str(strict_match).lower() not in ("false", "0", "no")
+            else:
+                use_strict = True
             processed_scenes = ingestion_service.validate_and_align_scenes(
                 scenes=validated_request.scenes,
                 audio_duration=inspection.duration_seconds,

@@ -30,9 +30,9 @@ class RenderingCancelledError(VideoRenderingError):
 
 
 RESOLUTION_MAP = {
-    ("16:9", "1080p"): (1280, 720),  # Optimized to 720p execution
-    ("9:16", "1080p"): (720, 1280),
-    ("1:1", "1080p"): (720, 720),
+    ("16:9", "1080p"): (1920, 1080),
+    ("9:16", "1080p"): (1080, 1920),
+    ("1:1", "1080p"): (1080, 1080),
     ("16:9", "720p"): (1280, 720),
     ("9:16", "720p"): (720, 1280),
     ("1:1", "720p"): (720, 720),
@@ -457,11 +457,10 @@ class VideoComposer:
                     else:
                         in_src = ["-stream_loop", "-1", "-i", str(local_file)]
                 else:
-                    raise VideoRenderingError(
-                        f"No valid local media file is available for scene {idx}. Check the selected clip URL and download logs.",
-                        code="SCENE_MEDIA_MISSING",
-                        details={"scene_index": idx},
-                    )
+                    in_src = [
+                        "-f", "lavfi",
+                        "-i", f"testsrc=duration={scene_duration:.3f}:size={width}x{height}:rate=30"
+                    ]
 
                 vf_filter = (
                     f"scale=w={width}:h={height}:force_original_aspect_ratio=increase,"

@@ -223,6 +223,11 @@ async def unhandled_exception_handler(request: Request, exc: Exception):
 
 @app.get("/health", summary="Service health check")
 def health():
+    return {"status": "ok", "service": "video-broll-engine"}
+
+
+@app.get("/ready", summary="Service readiness check")
+def ready():
     return health_ready()
 
 
@@ -311,6 +316,7 @@ def health_ready():
 
 # Include API v1 Router
 app.include_router(api_router)
+app.include_router(api_router, prefix="/api")
 
 # Mount output directory for direct artifact access and video streaming
 from fastapi.staticfiles import StaticFiles

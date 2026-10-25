@@ -45,13 +45,13 @@ class Settings:
     MAX_TITLE_LENGTH: int = int(os.getenv("MAX_TITLE_LENGTH", "120"))
     
     MIN_SCENES: int = int(os.getenv("MIN_SCENES", "1"))
-    MAX_SCENES: int = int(os.getenv("MAX_SCENES", "150"))
+    MAX_SCENES: int = int(os.getenv("MAX_SCENES", "30"))
     
     MIN_SCENE_DURATION_SECONDS: float = float(os.getenv("MIN_SCENE_DURATION_SECONDS", "0.5"))
     MAX_SCENE_DURATION_SECONDS: float = float(os.getenv("MAX_SCENE_DURATION_SECONDS", "60.0"))
     
     MIN_JOB_DURATION_SECONDS: float = float(os.getenv("MIN_JOB_DURATION_SECONDS", "1.0"))
-    MAX_JOB_DURATION_SECONDS: float = float(os.getenv("MAX_JOB_DURATION_SECONDS", "1800.0"))
+    MAX_JOB_DURATION_SECONDS: float = float(os.getenv("MAX_JOB_DURATION_SECONDS", "300.0"))
     
     MAX_SCRIPT_LENGTH: int = int(os.getenv("MAX_SCRIPT_LENGTH", "60000"))
     MAX_NARRATION_LENGTH: int = int(os.getenv("MAX_NARRATION_LENGTH", "10000"))
