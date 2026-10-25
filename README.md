@@ -18,6 +18,7 @@
 
 [✨ Features](#-key-features) •
 [🚀 How to Run](#-how-to-run-the-project) •
+[🐳 Docker Guide](#-docker-containerization-guide) •
 [🖥️ Studio Walkthrough](#-vk-media-studio-split-screen-ui) •
 [🏗️ Architecture](#️-system-architecture) •
 [🔌 REST API Reference](#-rest-api-reference) •
@@ -215,6 +216,185 @@ Once your servers are running, open **[http://localhost:8000](http://localhost:8
    - Track progress from 0% to 100% on the status bar.
    - Preview the finished video with synchronized subtitles in the right-side player.
    - Click **"⬇ Download Video: <Project_Title>.mp4"** to save your deliverable.
+
+---
+
+## 🐳 Docker Containerization Guide
+
+The engine utilizes an enterprise container architecture orchestrated via **Docker Compose**, cleanly separating the edge reverse-proxy frontend from the compute-heavy video rendering and FFmpeg synthesis engine.
+
+### 🧩 Multi-Container Service Topology
+
+```mermaid
+flowchart TD
+    subgraph Host["Host Machine"]
+        Client["Web Browser / HTTP Client"]
+        HostVol[("./output Directory\n- jobs.db (SQLite WAL)\n- Rendered MP4s\n- Cache & Chunks")]
+    end
+
+    subgraph DockerNet["Docker Network: vk-broll-net"]
+        subgraph FrontendContainer["Frontend: vk-broll-frontend (Nginx Alpine)"]
+            Port80["Port 80 (Internal)\nMapped to Host 8000:80"]
+            StaticFiles["Static HTML5 / Vite Studio"]
+            ReverseProxy["Nginx Reverse Proxy\n/v1/ -> backend:8002\n/docs -> backend:8002\n/output/ -> backend:8002"]
+        end
+
+        subgraph BackendContainer["Backend: vk-broll-backend (Python 3.12-Slim)"]
+            Port8002["Port 8002 (Internal)\nMapped to Host 8002:8002"]
+            FastAPI["FastAPI App & Lifespan"]
+            AsyncQueue["Async Worker Queue"]
+            FFmpeg["FFmpeg & FFprobe 6.0+\nEdge-TTS Engine"]
+            ContainerVol["/app/output"]
+        end
+    end
+
+    Client -->|HTTP :8000| Port80
+    Client -.->|Direct API :8002| Port8002
+    Port80 --> StaticFiles
+    Port80 --> ReverseProxy
+    ReverseProxy -->|Internal Proxy| Port8002
+    FastAPI --> AsyncQueue
+    AsyncQueue --> FFmpeg
+    FFmpeg --> ContainerVol
+    ContainerVol <-->|Volume Bind Mount| HostVol
+```
+
+### 1. Docker Compose Services
+
+The compose configuration is managed via [`docker-compose.yml`](docker-compose.yml):
+
+| Container Name | Base Image | Internal Port | Host Port | Purpose |
+| :--- | :--- | :---: | :---: | :--- |
+| `vk-broll-frontend` | `nginx:alpine` | `80` | `8000` | Nginx web server hosting the Split-Screen Studio and reverse-proxying API traffic to the backend. |
+| `vk-broll-backend` | `python:3.12-slim` | `8002` | `8002` | Core FastAPI service with FFmpeg, Edge-TTS, SQLite WAL job store, and media ranking modules. |
+
+---
+
+### 2. Docker Compose Command Cheat Sheet
+
+#### Build and Launch
+```bash
+# Build images and start all containers in detached mode
+docker compose up -d --build
+
+# Check running container status and ports
+docker compose ps
+```
+
+#### Logs & Diagnostics
+```bash
+# Stream live logs from all services
+docker compose logs -f
+
+# Follow video rendering logs in the backend container
+docker compose logs -f backend
+
+# Follow Nginx access and proxy logs
+docker compose logs -f frontend
+```
+
+#### Stopping & Cleaning
+```bash
+# Stop containers without removing them
+docker compose stop
+
+# Stop and remove containers (preserves host ./output deliverables)
+docker compose down
+
+# Force re-build from scratch without Docker layer caching
+docker compose build --no-cache
+```
+
+---
+
+### 3. Running Standalone Containers (Without Compose)
+
+If you need to build and run the services individually using vanilla `docker run`:
+
+#### Backend Container
+```bash
+# 1. Build backend image
+docker build -t vk-broll-backend:latest .
+
+# 2. Run backend container (PowerShell)
+docker run -d `
+  --name vk-broll-backend `
+  -p 8002:8002 `
+  -v ${PWD}/output:/app/output `
+  --env-file .env `
+  vk-broll-backend:latest
+
+# On Linux / macOS:
+docker run -d \
+  --name vk-broll-backend \
+  -p 8002:8002 \
+  -v $(pwd)/output:/app/output \
+  --env-file .env \
+  vk-broll-backend:latest
+```
+
+#### Frontend Container
+```bash
+# 1. Build frontend image
+cd frontend
+docker build -t vk-broll-frontend:latest .
+
+# 2. Run frontend container
+docker run -d `
+  --name vk-broll-frontend `
+  -p 8000:80 `
+  vk-broll-frontend:latest
+```
+
+---
+
+### 4. Volume Persistence & Host File Mapping
+
+The backend container binds your host's `./output` directory to `/app/output`. This ensures:
+- **Zero Data Loss:** When containers stop, restart, or are pruned, all generated video deliverables, SubRip subtitles, and JSON timelines persist safely on your host.
+- **SQLite Database Continuity:** The SQLite job store (`output/jobs.db`) operates in Write-Ahead Logging (WAL) mode, allowing persistent job history and crash recovery across container updates.
+- **Stock Media Caching:** Downloaded CC0, Pixabay, and Pexels clips are cached locally in `output/remote_cache/` to eliminate redundant re-downloads.
+
+```
+output/
+├── jobs.db                      # Persistent SQLite job queue
+├── jobs.db-wal                  # SQLite WAL journal
+├── remote_cache/                # Cached stock B-roll footage
+└── <job_uuid>/                  # Isolated per-job deliverables
+    ├── video.mp4                # Synthesized 1080p MP4
+    ├── captions.srt             # SubRip subtitle track
+    ├── timeline.json            # Frame-accurate timing breakdown
+    └── manifest.json            # Provenance hashes & licensing
+```
+
+---
+
+### 5. Docker Troubleshooting & Common Issues
+
+| Issue / Symptom | Root Cause | Solution |
+| :--- | :--- | :--- |
+| `bind: address already in use (8000 or 8002)` | A local host process (Node, Python, or another container) is occupying port `8000` or `8002`. | Kill the blocking process (`netstat -ano \| findstr :8002` on Windows), or modify port bindings in `docker-compose.yml` (e.g. `"8080:80"`). |
+| `Permission denied writing to /app/output` (Linux) | Host folder permissions restrict container write access. | Run `chmod -R 777 ./output` on your host machine to allow Docker write permissions. |
+| Container runs out of memory during 1080p FFmpeg encode | Default Docker memory limit (e.g. 2 GB) is exceeded during high-res multiplexing. | In Docker Desktop **Settings > Resources**, increase memory allocation to 4 GB+ or add `mem_limit: 4g` to `docker-compose.yml`. |
+| Cannot connect to host AI generator (`localhost:8003`) from container | `localhost` within a container refers to the container itself. | Use `host.docker.internal:8003` (already pre-configured in `docker-compose.yml`). |
+
+---
+
+### 6. Interactive Container Shell & Debugging
+
+```bash
+# Open interactive bash shell inside the backend container
+docker exec -it vk-broll-backend /bin/bash
+
+# Verify FFmpeg binary and codec support inside the container
+docker exec -it vk-broll-backend ffmpeg -version
+
+# Monitor live CPU and memory utilization across containers
+docker stats vk-broll-backend vk-broll-frontend
+
+# Inspect the bridge network connecting frontend and backend
+docker network inspect vk-broll-net
+```
 
 ---
 
