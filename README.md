@@ -26,6 +26,7 @@
 [📋 Evidence Table](EVIDENCE_TABLE.md) •
 [🏆 Levels Reached](LEVELS_REACHED.md) •
 [🔌 Integration Standard](INTEGRATION_STANDARD.md) •
+[📊 Measured Numbers](MEASURED_NUMBERS.md) •
 [🤖 AI Use](ai%20use.md)
 
 </div>
