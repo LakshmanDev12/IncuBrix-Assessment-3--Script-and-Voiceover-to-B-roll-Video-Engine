@@ -437,6 +437,15 @@ function syncVideoFilename(customName){
 }
 function fmt(s){ return Number(s||0).toFixed(1) + 's'; }
 function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+function errorMessage(error){
+  if(typeof error === 'string') return error;
+  if(!error) return 'Rendering error';
+
+  var message = error.message || (error.detail && error.detail.message) || error.detail;
+  if(typeof message === 'string') return message;
+  if(message != null) return JSON.stringify(message);
+  return JSON.stringify(error);
+}
 function total(){ return scenes.reduce(function(a,s){ return a + Number(s.t||0); }, 0); }
 function words(s){ return (s.trim().match(/\S+/g) || []).length; }
 function count(el,to,f){ var from = el._v||0, s = performance.now(); el._v = to; (function k(n){ var p = Math.min(1,(n-s)/450), e = 1 - Math.pow(1-p,3); el.textContent = f(from+(to-from)*e); if(p<1) requestAnimationFrame(k); })(s); }
@@ -718,16 +727,38 @@ if(titleInput){
   });
 }
 
+window.splitIntoScenes = function(force){
+  var txt = ($('script') ? $('script').value : '').trim();
+  if(!txt){
+    if(force){
+      if($('script')) $('script').focus();
+      toast('Please enter a narration script');
+    }
+    return false;
+  }
+  
+  var currentScenesText = scenes.map(function(s){ return (s.n || '').trim(); }).join(' ').replace(/\s+/g, ' ');
+  var scriptCleanText = txt.replace(/\s+/g, ' ');
+  
+  if(force || !scenes.length || scriptCleanText !== currentScenesText){
+    var parts = txt.match(/[^.!?]+[.!?]*/g) || [txt];
+    scenes = parts.map(function(p){
+      p = p.trim();
+      var kw = p.replace(/[^\w\s]/g, '').split(/\s+/).slice(0, 5).join(' ').toLowerCase();
+      return { t: Math.max(2, Math.round(words(p) / 2.5 * 2) / 2), n: p, v: kw };
+    }).filter(function(s){ return s.n; });
+    render();
+    replay();
+    toast('Split into ' + scenes.length + ' scenes');
+    return true;
+  } else {
+    replay();
+  }
+  return false;
+};
+
 $('seg').onclick = function(){
-  var txt = $('script').value.trim();
-  if(!txt){ $('script').focus(); return; }
-  var parts = txt.match(/[^.!?]+[.!?]*/g) || [txt];
-  scenes = parts.map(function(p){
-    p = p.trim();
-    var kw = p.replace(/[^\w\s]/g, '').split(/\s+/).slice(0, 5).join(' ').toLowerCase();
-    return { t: Math.max(2, Math.round(words(p) / 2.5 * 2) / 2), n: p, v: kw };
-  }).filter(function(s){ return s.n; });
-  render();
+  splitIntoScenes(true);
 };
 
 $('sample').onclick = function(){
@@ -817,7 +848,15 @@ var defaultStages = ['Matching footage to scenes', 'Trimming clips to length', '
 
 async function triggerVideoGeneration(options){
   var isUpdatePreview = !!(options && options.isUpdatePreview);
-  if(!scenes.length){ toast('Please add at least one scene'); return; }
+  
+  // First ensure script is split into scenes if edited or empty
+  splitIntoScenes(false);
+  
+  if(!scenes.length){
+    toast('Please enter a narration script to generate');
+    if($('script')) $('script').focus();
+    return;
+  }
   
   // Pause any playing audio/video before generation to prevent overlap
   stop(false);
@@ -911,6 +950,7 @@ async function triggerVideoGeneration(options){
 }
 
 $('gen').onclick = function(){
+  splitIntoScenes(false);
   triggerVideoGeneration({ isUpdatePreview: false });
 };
 
@@ -987,7 +1027,7 @@ function pollJob(jobId, isUpdatePreview){
       }
 
       if(data.status === 'failed' || data.status === 'cancelled'){
-        $('stg').innerHTML = '<div style="color:#fa5252;font-weight:600">Failed: ' + esc(data.error || data.stage_message || 'Rendering error') + '</div>';
+        $('stg').innerHTML = '<div style="color:#fa5252;font-weight:600">Failed: ' + esc(errorMessage(data.error || data.stage_message || 'Rendering error')) + '</div>';
         toast('Render failed');
         return;
       }
@@ -1200,7 +1240,14 @@ if(mvid){
   });
 }
 
-$('play').onclick = function(){ playing ? stop() : start(); };
+$('play').onclick = function(){
+  var didSplit = splitIntoScenes(false);
+  if(!playing || didSplit){
+    start();
+  } else {
+    stop();
+  }
+};
 
 var dlTopBtn = $('btn-dl-video');
 if(dlTopBtn){
@@ -1217,7 +1264,12 @@ var mini = $('mini');
 if(mini){
   mini.addEventListener('click', function(e){
     if(e.target.id === 'mvid-audio' || e.target.closest('#mvid-audio')) return;
-    playing ? stop() : start();
+    var didSplit = splitIntoScenes(false);
+    if(!playing || didSplit){
+      start();
+    } else {
+      stop();
+    }
   });
 }
 
@@ -1241,7 +1293,12 @@ if(tlw){
 document.addEventListener('keydown', function(e){
   if(e.code === 'Space' && !/INPUT|TEXTAREA|SELECT|BUTTON/.test(e.target.tagName) && !$('dlg').open && !$('p-studio').classList.contains('hide')){
     e.preventDefault();
-    playing ? stop() : start();
+    var didSplit = splitIntoScenes(false);
+    if(!playing || didSplit){
+      start();
+    } else {
+      stop();
+    }
   }
 });
 
@@ -1258,7 +1315,7 @@ function replay(){
   });
 }
 
-$('seg').addEventListener('click', function(){ replay(); toast('Split into ' + scenes.length + ' scenes'); });
+// $('seg').onclick handles split and animation
 $('add').addEventListener('click', function(){ replay(); toast('Scene added'); });
 $('wave').innerHTML = Array.apply(null, Array(36)).map(function(_,i){
   return '<i style="--h:' + (30 + Math.floor(Math.abs(Math.sin(i*1.7))*70)) + '%;animation-delay:-' + (i*0.11).toFixed(2) + 's"></i>';

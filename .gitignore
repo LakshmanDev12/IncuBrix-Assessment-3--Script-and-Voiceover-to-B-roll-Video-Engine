@@ -1,4 +1,7 @@
 .env
 .env.*
 !.env.example
-!frontend/dist/sample_video.mp4) 
+__pycache__/
+*.pyc
+output/
+.venv/
