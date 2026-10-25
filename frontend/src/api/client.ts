@@ -11,10 +11,18 @@ import type {
   SegmentationResponse,
 } from '../types';
 
+// ==================================================
+// API CONFIGURATION
+// ==================================================
+
 const API_BASE = (
   import.meta.env.VITE_API_BASE_URL ||
   'https://incubrix-video-broll-engine.onrender.com'
 ).replace(/\/+$/, '');
+
+// ==================================================
+// API ERROR CLASS
+// ==================================================
 
 export class ApiError extends Error {
   code: string;
@@ -28,6 +36,7 @@ export class ApiError extends Error {
     details?: unknown,
   ) {
     super(message);
+
     this.name = 'ApiError';
     this.code = code;
     this.status = status;
@@ -35,8 +44,15 @@ export class ApiError extends Error {
   }
 }
 
-async function handleResponse<T>(res: Response): Promise<T> {
+// ==================================================
+// COMMON RESPONSE HANDLER
+// ==================================================
+
+async function handleResponse<T>(
+  res: Response,
+): Promise<T> {
   const responseText = await res.text();
+
   let data: unknown;
 
   if (responseText.trim()) {
@@ -48,16 +64,20 @@ async function handleResponse<T>(res: Response): Promise<T> {
   }
 
   if (!res.ok) {
-    const body = data as {
-      detail?: string | {
-        error_code?: string;
-        message?: string;
-        details?: unknown;
-      };
-      message?: string;
-      error_code?: string;
-      details?: unknown;
-    } | undefined;
+    const body = data as
+      | {
+          detail?:
+            | string
+            | {
+                error_code?: string;
+                message?: string;
+                details?: unknown;
+              };
+          message?: string;
+          error_code?: string;
+          details?: unknown;
+        }
+      | undefined;
 
     let message = `Request failed with status ${res.status}`;
     let code = 'HTTP_ERROR';
@@ -65,7 +85,10 @@ async function handleResponse<T>(res: Response): Promise<T> {
 
     if (typeof body?.detail === 'string') {
       message = body.detail;
-    } else if (body?.detail && typeof body.detail === 'object') {
+    } else if (
+      body?.detail &&
+      typeof body.detail === 'object'
+    ) {
       message = body.detail.message || message;
       code = body.detail.error_code || code;
       details = body.detail.details;
@@ -77,7 +100,12 @@ async function handleResponse<T>(res: Response): Promise<T> {
       message = responseText.slice(0, 300);
     }
 
-    throw new ApiError(message, code, res.status, details);
+    throw new ApiError(
+      message,
+      code,
+      res.status,
+      details,
+    );
   }
 
   if (!responseText.trim()) {
@@ -100,22 +128,38 @@ async function handleResponse<T>(res: Response): Promise<T> {
   return data as T;
 }
 
+// ==================================================
+// API METHODS
+// ==================================================
+
 export const api = {
+  // ----------------------------------------------
+  // Backend health
+  // ----------------------------------------------
+
   async getHealth(): Promise<{
     status: string;
     version: string;
     uptime_seconds?: number;
   }> {
-    return handleResponse(
-      await fetch(`${API_BASE}/health`),
-    );
+    const res = await fetch(`${API_BASE}/health`);
+
+    return handleResponse(res);
   },
 
+  // ----------------------------------------------
+  // Application limits
+  // ----------------------------------------------
+
   async getLimits(): Promise<LimitsResponse> {
-    return handleResponse(
-      await fetch(`${API_BASE}/v1/limits`),
-    );
+    const res = await fetch(`${API_BASE}/v1/limits`);
+
+    return handleResponse(res);
   },
+
+  // ----------------------------------------------
+  // List jobs
+  // ----------------------------------------------
 
   async listJobs(
     status?: string,
@@ -131,35 +175,61 @@ export const api = {
     params.set('limit', String(limit));
     params.set('offset', String(offset));
 
-    return handleResponse(
-      await fetch(`${API_BASE}/v1/jobs?${params.toString()}`),
+    const res = await fetch(
+      `${API_BASE}/v1/jobs?${params.toString()}`,
     );
+
+    return handleResponse(res);
   },
 
-  async getJob(jobId: string): Promise<JobResponse> {
-    return handleResponse(
-      await fetch(
-        `${API_BASE}/v1/jobs/${encodeURIComponent(jobId)}`,
-      ),
+  // ----------------------------------------------
+  // Get one job
+  // ----------------------------------------------
+
+  async getJob(
+    jobId: string,
+  ): Promise<JobResponse> {
+    const res = await fetch(
+      `${API_BASE}/v1/jobs/${encodeURIComponent(jobId)}`,
     );
+
+    return handleResponse(res);
   },
 
-  async cancelJob(jobId: string): Promise<CancelJobResponse> {
-    return handleResponse(
-      await fetch(
-        `${API_BASE}/v1/jobs/${encodeURIComponent(jobId)}/cancel`,
-        { method: 'POST' },
-      ),
+  // ----------------------------------------------
+  // Cancel job
+  // ----------------------------------------------
+
+  async cancelJob(
+    jobId: string,
+  ): Promise<CancelJobResponse> {
+    const res = await fetch(
+      `${API_BASE}/v1/jobs/${encodeURIComponent(jobId)}/cancel`,
+      {
+        method: 'POST',
+      },
     );
+
+    return handleResponse(res);
   },
 
-  async getArtifacts(jobId: string): Promise<ArtifactsResponse> {
-    return handleResponse(
-      await fetch(
-        `${API_BASE}/v1/jobs/${encodeURIComponent(jobId)}/artifacts`,
-      ),
+  // ----------------------------------------------
+  // Get job artifacts
+  // ----------------------------------------------
+
+  async getArtifacts(
+    jobId: string,
+  ): Promise<ArtifactsResponse> {
+    const res = await fetch(
+      `${API_BASE}/v1/jobs/${encodeURIComponent(jobId)}/artifacts`,
     );
+
+    return handleResponse(res);
   },
+
+  // ----------------------------------------------
+  // Create job using JSON
+  // ----------------------------------------------
 
   async createJobJson(
     payload: Record<string, unknown>,
@@ -173,14 +243,18 @@ export const api = {
       headers['Idempotency-Key'] = idempotencyKey;
     }
 
-    return handleResponse(
-      await fetch(`${API_BASE}/v1/jobs`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(payload),
-      }),
-    );
+    const res = await fetch(`${API_BASE}/v1/jobs`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(payload),
+    });
+
+    return handleResponse(res);
   },
+
+  // ----------------------------------------------
+  // Create job using multipart form data
+  // ----------------------------------------------
 
   async createJobMultipart(
     formData: FormData,
@@ -192,14 +266,21 @@ export const api = {
       headers['Idempotency-Key'] = idempotencyKey;
     }
 
-    return handleResponse(
-      await fetch(`${API_BASE}/v1/jobs/multipart`, {
+    const res = await fetch(
+      `${API_BASE}/v1/jobs/multipart`,
+      {
         method: 'POST',
         headers,
         body: formData,
-      }),
+      },
     );
+
+    return handleResponse(res);
   },
+
+  // ----------------------------------------------
+  // Validate audio URL
+  // ----------------------------------------------
 
   async probeAudioUrl(
     url: string,
@@ -208,50 +289,90 @@ export const api = {
     duration_seconds?: number;
     codec?: string;
   }> {
-    return handleResponse(
-      await fetch(`${API_BASE}/v1/audio/validate-url`, {
+    const res = await fetch(
+      `${API_BASE}/v1/audio/validate-url`,
+      {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({ url }),
-      }),
+      },
     );
+
+    return handleResponse(res);
   },
+
+  // ----------------------------------------------
+  // Segment script into scenes
+  // ----------------------------------------------
 
   async segmentScript(
     req: SegmentationRequest,
   ): Promise<SegmentationResponse> {
-    return handleResponse(
-      await fetch(`${API_BASE}/v1/scenes/segment`, {
+    const res = await fetch(
+      `${API_BASE}/v1/scenes/segment`,
+      {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify(req),
-      }),
+      },
     );
+
+    return handleResponse(res);
   },
+
+  // ----------------------------------------------
+  // Search B-roll media
+  // Default provider: Pixabay
+  // ----------------------------------------------
 
   async searchMedia(
     query: string,
-    provider = 'local_cc0',
+    provider = 'pixabay',
     count = 10,
   ): Promise<MediaSearchResponse> {
+    const normalizedQuery = query.trim();
+
+    if (!normalizedQuery) {
+      throw new ApiError(
+        'Enter a search query for B-roll footage.',
+        'EMPTY_QUERY',
+        400,
+      );
+    }
+
     const params = new URLSearchParams({
-      query,
+      query: normalizedQuery,
       provider,
       count: String(count),
     });
 
-    return handleResponse(
-      await fetch(
-        `${API_BASE}/v1/media/search?${params.toString()}`,
-      ),
+    const res = await fetch(
+      `${API_BASE}/v1/media/search?${params.toString()}`,
     );
+
+    return handleResponse(res);
   },
 
+  // ----------------------------------------------
+  // List media providers
+  // Confirmed path: /v1/providers
+  // ----------------------------------------------
+
   async listProviders(): Promise<ProviderItemResponse[]> {
-    return handleResponse(
-      await fetch(`${API_BASE}/v1/providers`),
+    const res = await fetch(
+      `${API_BASE}/v1/providers`,
     );
+
+    return handleResponse(res);
   },
+
+  // ----------------------------------------------
+  // Artifact download URL
+  // ----------------------------------------------
 
   getArtifactDownloadUrl(
     jobId: string,
