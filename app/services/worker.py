@@ -36,7 +36,7 @@ class BackgroundWorker:
       3. Process Fate Sharing: If the FastAPI container terminates forcefully (OOM / SIGKILL),
          currently running jobs will be halted and must be recovered on restart.
     """
-    def __init__(self, concurrency: int = 2):
+    def __init__(self, concurrency: int = 1):
         self.concurrency = concurrency
         self._queue: asyncio.Queue[str] = asyncio.Queue()
         self._tasks: list[asyncio.Task] = []
@@ -341,4 +341,4 @@ class BackgroundWorker:
         return sanitized
 
 
-background_worker = BackgroundWorker()
+background_worker = BackgroundWorker(concurrency=1)

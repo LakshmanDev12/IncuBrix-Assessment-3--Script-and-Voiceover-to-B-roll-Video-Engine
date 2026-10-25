@@ -93,12 +93,12 @@ class VideoComposer:
         return shutil.which("ffprobe") is not None
 
     @staticmethod
-    def get_dimensions(aspect_ratio: str = "16:9", resolution: str = "1080p") -> Tuple[int, int]:
+    def get_dimensions(aspect_ratio: str = "16:9", resolution: str = "720p") -> Tuple[int, int]:
         """Resolves target pixel dimensions for given aspect ratio and resolution."""
         key = (aspect_ratio, resolution)
         if key in RESOLUTION_MAP:
             return RESOLUTION_MAP[key]
-        return (1920, 1080)
+        return (1280, 720)
 
     def verify_rendered_output(
         self,
@@ -249,7 +249,7 @@ class VideoComposer:
         selected_clips: List[Dict[str, Any]],
         output_path: Path,
         aspect_ratio: str = "16:9",
-        resolution: str = "1080p",
+        resolution: str = "720p",
         audio_path: Optional[Path] = None,
         subtitle_path: Optional[Path] = None,
         cancel_check: Optional[Callable[[], bool]] = None
@@ -269,7 +269,7 @@ class VideoComposer:
         output_path.parent.mkdir(parents=True, exist_ok=True)
 
         if self.is_ffmpeg_available():
-            logger.info(f"FFmpeg detected. Rendering 1080p composition for job '{job_id}' ({width}x{height}, {total_duration:.2f}s).")
+            logger.info(f"FFmpeg detected. Rendering {resolution} composition for job '{job_id}' ({width}x{height}, {total_duration:.2f}s).")
             return await self._render_with_ffmpeg(
                 job_id=job_id,
                 scenes=scenes,
@@ -373,8 +373,8 @@ class VideoComposer:
         concat_txt = temp_dir / "concat_list.txt"
 
         try:
-            # 1. Conform each scene clip to target dimensions, 30fps, yuv420p, and duration concurrently
-            sem = asyncio.Semaphore(4)
+            # 1. Conform each scene clip to target dimensions, 30fps, yuv420p, and duration sequentially
+            sem = asyncio.Semaphore(1)
 
             async def _conform_one_scene(idx: int, scene: Dict[str, Any]) -> Path:
                 if cancel_check and cancel_check():
@@ -408,11 +408,42 @@ class VideoComposer:
                             try:
                                 import httpx
                                 headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) IncuBrix/1.0"}
-                                with httpx.Client(timeout=4.0, follow_redirects=True, headers=headers) as dl:
-                                    r = dl.get(str(possible_url))
-                                    if r.status_code == 200 and len(r.content) > 10240:
-                                        cached_target.write_bytes(r.content)
-                                        local_file = str(cached_target.resolve())
+                                with httpx.Client(
+                                    timeout=httpx.Timeout(30.0, connect=10.0),
+                                    follow_redirects=True,
+                                    headers=headers,
+                                ) as dl:
+                                    with dl.stream("GET", str(possible_url)) as r:
+                                        if r.status_code == 200:
+                                            content_type = r.headers.get("content-type", "").lower()
+                                            if (
+                                                content_type.startswith("video/")
+                                                or content_type.startswith("image/")
+                                                or "octet-stream" in content_type
+                                            ):
+                                                bytes_written = 0
+                                                with cached_target.open("wb") as output:
+                                                    for chunk in r.iter_bytes(chunk_size=64 * 1024):
+                                                        if chunk:
+                                                            if bytes_written + len(chunk) > settings.MAX_MEDIA_DOWNLOAD_SIZE_BYTES:
+                                                                raise VideoRenderingError(
+                                                                    f"Downloaded media for scene {idx} exceeds maximum allowable size.",
+                                                                    code="MEDIA_TOO_LARGE",
+                                                                    details={"scene_index": idx, "max_bytes": settings.MAX_MEDIA_DOWNLOAD_SIZE_BYTES},
+                                                                )
+                                                            output.write(chunk)
+                                                            bytes_written += len(chunk)
+                                                if bytes_written > 10240:
+                                                    local_file = str(cached_target.resolve())
+                                                else:
+                                                    cached_target.unlink(missing_ok=True)
+                                                    logger.warning("Downloaded media was too small for scene %s", idx)
+                                            else:
+                                                logger.warning("Unexpected content type for scene %s: %s", idx, content_type)
+                                        else:
+                                            logger.warning("Clip download returned HTTP %s for scene %s", r.status_code, idx)
+                            except VideoRenderingError:
+                                raise
                             except Exception as e:
                                 logger.warning(f"Could not download clip from url {possible_url}: {e}")
 
@@ -426,10 +457,11 @@ class VideoComposer:
                     else:
                         in_src = ["-stream_loop", "-1", "-i", str(local_file)]
                 else:
-                    in_src = [
-                        "-f", "lavfi",
-                        "-i", f"testsrc=duration={scene_duration:.3f}:size={width}x{height}:rate=30"
-                    ]
+                    raise VideoRenderingError(
+                        f"No valid local media file is available for scene {idx}. Check the selected clip URL and download logs.",
+                        code="SCENE_MEDIA_MISSING",
+                        details={"scene_index": idx},
+                    )
 
                 vf_filter = (
                     f"scale=w={width}:h={height}:force_original_aspect_ratio=increase,"
