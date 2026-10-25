@@ -1,7 +1,7 @@
 # 🤖 AI Assistance & Tooling Disclosure (`ai use.md`)
 
 > **Project:** Vk-Media IncuBrix Video B-Roll Engine  
-> **Repository:** [https://github.com/LakshmanDev12/incubrix-video-broll-engine.git](https://github.com/LakshmanDev12/incubrix-video-broll-engine.git)  
+> **Repository:** [https://github.com/LakshmanDev12/IncuBrix-Assessment-3--Script-and-Voiceover-to-B-roll-Video-Engine.git](https://github.com/LakshmanDev12/IncuBrix-Assessment-3--Script-and-Voiceover-to-B-roll-Video-Engine.git)  
 > **Status:** 100% Verified • 155 Passing Pytest Suites • Production Ready
 
 ---
