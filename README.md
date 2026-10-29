@@ -9,6 +9,7 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110+-009688.svg?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 [![Python](https://img.shields.io/badge/Python-3.12%20%7C%203.13-3776AB.svg?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
 [![Live Demo](https://img.shields.io/badge/🚀%20Live%20Web%20Studio-Vercel%20Cloud-00C7B7.svg?style=for-the-badge&logo=vercel&logoColor=white)](https://incubrix-video-broll-engine.vercel.app/)
+[![Swagger UI](https://img.shields.io/badge/🧪%20Swagger%20UI-Render%20Cloud%20API-85EA2D.svg?style=for-the-badge&logo=swagger&logoColor=black)](https://incubrix-video-broll-engine.onrender.com/docs)
 [![Sample Video](https://img.shields.io/badge/🎬%20Sample%20Video-15:00%20Min%20Render-E11D48.svg?style=for-the-badge&logo=google-drive&logoColor=white)](https://drive.google.com/file/d/1XBJ_qyGlQudaBiA4FhneKXxE808tqsb2/view?usp=sharing)
 [![Docker](https://img.shields.io/badge/Docker-Compose%20v2-2496ED.svg?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
 [![FFmpeg](https://img.shields.io/badge/FFmpeg-6.0+%20%7C%209.0.1+-007808.svg?style=for-the-badge&logo=ffmpeg&logoColor=white)](https://ffmpeg.org)
@@ -20,6 +21,8 @@
 <br/>
 
 [🌐 Live Web Studio](https://incubrix-video-broll-engine.vercel.app/) •
+[⚙️ Cloud FastAPI Backend](https://incubrix-video-broll-engine.onrender.com/) •
+[🧪 Swagger UI](https://incubrix-video-broll-engine.onrender.com/docs) •
 [🎬 15:00 Min Sample Video](https://drive.google.com/file/d/1XBJ_qyGlQudaBiA4FhneKXxE808tqsb2/view?usp=sharing) •
 [🎥 Unedited Walkthrough](https://drive.google.com/file/d/1DMZmS_t_iJfAsIb9ll3Qhc8AiPU1lksB/view?usp=sharing) •
 [✨ Edited Showcase](https://drive.google.com/file/d/1E7Qa8Tcy89PY3jZ7xDU9TJP4RTOZsFnl/view?usp=sharing) •
@@ -47,6 +50,9 @@
 > 
 > ### 👉 **[https://incubrix-video-broll-engine.vercel.app/](https://incubrix-video-broll-engine.vercel.app/)** 👈
 > 
+> - 🧪 **Live FastAPI Backend & Swagger UI:**  
+>   👉 **[https://incubrix-video-broll-engine.onrender.com/docs](https://incubrix-video-broll-engine.onrender.com/docs)** 👈  
+>   *Explore and test every REST endpoint of the cloud-hosted FastAPI engine directly in the interactive OpenAPI console.*
 > - 🎬 **Featured Full-Length Render Output (Length: 15:00 Minutes)**:  
 >   👉 **[Watch 15-Minute Generated Video on Google Drive](https://drive.google.com/file/d/1XBJ_qyGlQudaBiA4FhneKXxE808tqsb2/view?usp=sharing)** 👈  
 >   *Complete 15-minute end-to-end generated video demonstrating long-form narration pacing, continuous semantic B-roll coverage across dozens of scenes, frame-accurate synchronization, and zero audio drift.*
@@ -117,11 +123,17 @@ Whether driven via its modern **Split-Screen Web Studio** or integrated headless
 | Service / Interface | URL | Description |
 | :--- | :--- | :--- |
 | 🌐 **Live Web Studio (Hosted)** | **[https://incubrix-video-broll-engine.vercel.app/](https://incubrix-video-broll-engine.vercel.app/)** | **Instant Live Deployment** — Full split-screen studio, zero local installation required |
+| ⚙️ **Cloud FastAPI Backend (Hosted)** | **[https://incubrix-video-broll-engine.onrender.com/](https://incubrix-video-broll-engine.onrender.com/)** | Live cloud-hosted FastAPI engine on Render powering asynchronous video processing |
+| 🧪 **Cloud Swagger UI (Hosted)** | **[https://incubrix-video-broll-engine.onrender.com/docs](https://incubrix-video-broll-engine.onrender.com/docs)** | Interactive OpenAPI explorer to test every REST endpoint against the live cloud API |
+| 🩺 **Cloud Health Probe (Hosted)** | **[https://incubrix-video-broll-engine.onrender.com/health/ready](https://incubrix-video-broll-engine.onrender.com/health/ready)** | Live disk space verification and database readiness check |
 | 🎬 **Sample Video (15:00 Min)** | **[Watch on Google Drive](https://drive.google.com/file/d/1XBJ_qyGlQudaBiA4FhneKXxE808tqsb2/view?usp=sharing)** | Full-length 15:00 minute end-to-end generated video output (stress-test deliverable) |
 | 🖥️ **Vk-Media Web Studio (Local)** | **[http://localhost:8000](http://localhost:8000)** | Split-screen studio: prompt editor, auto scene splitter, live video player & MP4 downloader |
-| 🔌 **FastAPI Backend Engine** | **[http://localhost:8002](http://localhost:8002)** | Asynchronous video processing API and SQLite queue worker |
-| 📚 **Interactive Swagger API Docs**| **[http://localhost:8002/docs](http://localhost:8002/docs)** | Interactive OpenAPI endpoint explorer and testing console |
-| 🩺 **System Health Probe** | **[http://localhost:8002/health/ready](http://localhost:8002/health/ready)** | Disk space verification and database readiness check |
+| 🔌 **FastAPI Backend Engine (Local)** | **[http://localhost:8002](http://localhost:8002)** | Asynchronous video processing API and SQLite queue worker |
+| 📚 **Interactive Swagger API Docs (Local)**| **[http://localhost:8002/docs](http://localhost:8002/docs)** | Interactive OpenAPI endpoint explorer and testing console |
+| 🩺 **System Health Probe (Local)** | **[http://localhost:8002/health/ready](http://localhost:8002/health/ready)** | Disk space verification and database readiness check |
+
+> [!NOTE]
+> The cloud backend runs on Render, so after a period of inactivity the first request may take a short while to wake the service up.
 
 ---
 
@@ -131,6 +143,8 @@ Open **[https://incubrix-video-broll-engine.vercel.app/](https://incubrix-video-
 - Type or paste your script and enter a project title.
 - Choose your preferred neural voice (English, Hindi, Tamil) and aspect ratio (16:9, 9:16, 1:1).
 - Click **⚡ Generate Video** to create and preview the synchronized 1080p MP4 deliverable directly from the cloud.
+
+Prefer working with the API? Open the live **[Swagger UI](https://incubrix-video-broll-engine.onrender.com/docs)** to submit jobs, track progress, and download artifacts without writing any code.
 
 ---
 
@@ -445,6 +459,7 @@ docker network inspect vk-broll-net
 > - 🎥 **Unedited Walkthrough (< 8 mins)**: [Watch on Google Drive](https://drive.google.com/file/d/1DMZmS_t_iJfAsIb9ll3Qhc8AiPU1lksB/view?usp=sharing)
 > - ✨ **Edited Video Showcase**: [Watch on Google Drive](https://drive.google.com/file/d/1E7Qa8Tcy89PY3jZ7xDU9TJP4RTOZsFnl/view?usp=sharing)
 > - 🌐 **Live Interactive Web Studio**: [https://incubrix-video-broll-engine.vercel.app/](https://incubrix-video-broll-engine.vercel.app/)
+> - 🧪 **Live Swagger UI (FastAPI)**: [https://incubrix-video-broll-engine.onrender.com/docs](https://incubrix-video-broll-engine.onrender.com/docs)
 
 The web studio is optimized for rapid, distraction-free video creation:
 
@@ -527,6 +542,9 @@ stateDiagram-v2
 ---
 
 ## 🔌 REST API Reference
+
+> [!TIP]
+> Try every endpoint below interactively in the live cloud **[Swagger UI](https://incubrix-video-broll-engine.onrender.com/docs)**, or locally at [http://localhost:8002/docs](http://localhost:8002/docs). The `curl` examples use `localhost:8002`; swap in `https://incubrix-video-broll-engine.onrender.com` to call the cloud API.
 
 ### 1. Submit Render Job (JSON)
 `POST /v1/jobs`
